@@ -1,5 +1,6 @@
 import Footer from "@components/Footer";
 import Navbar from "@components/Navbar";
+
 const Home = () => {
   return (
     <section className="w-full h-full flex-center flex-col">
@@ -44,6 +45,7 @@ const Home = () => {
           to unlock your full potential and elevate your fitness journey to new
           heights.
         </span>
+
         <span>
           Form Correction and Feedback: As you exercise, MoveMateAI constantly
           evaluates your form and technique. If it detects any deviations or

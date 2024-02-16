@@ -65,7 +65,7 @@ video {
   height: auto;
   max-width: 100px;
 }
-.cam-container{
+.cam-container {
   max-height: 500px;
 }
 @media screen and (max-width: 767px) {
@@ -91,7 +91,7 @@ video {
 }
 
 .orange_btn {
-  @apply rounded-full border bg-gradient-to-r from-amber-500 to-orange-600  border-none py-1.5 px-12 text-white transition-all hover:bg-white hover:text-black text-center text-xl font-bold flex items-center justify-center;
+  @apply rounded-full border bg-gradient-to-bl from-orange-600 to-red-500  border-none py-1.5 px-6 text-white transition-all hover:bg-white hover:text-yellow-900 text-center text-base font-bold flex items-center justify-center;
 }
 
 .outline_btn {
@@ -150,7 +150,7 @@ video {
 
 /* Nav Component */
 .logo_text {
-  @apply max-sm:hidden font-extrabold text-xl sm:text-3xl tracking-wide text-orange-400;
+  @apply max-sm:hidden font-extrabold text-xl sm:text-3xl tracking-wide bg-gradient-to-r from-red-500  to-orange-500 inline-block text-transparent bg-clip-text;
 }
 
 .dropdown {
