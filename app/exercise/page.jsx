@@ -52,8 +52,8 @@ const Exercise = () => {
               </svg>
               <span className="sr-only">Info</span>
               <div>
-                <span className="font-medium">Warning alert!</span> Change a few
-                things up and try submitting again.
+                <span className="font-medium">Warning alert!</span> Ensure that
+                your 17 keypoints are clearly discernible.
               </div>
             </div>
           )}
@@ -97,7 +97,10 @@ const Exercise = () => {
               ></div>
             </div>
           </label>
-          <div className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md">
+          <div
+            className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md"
+            id="webcam-container"
+          >
             {openWebcam ? (
               <Webcam className="" />
             ) : (
@@ -111,14 +114,14 @@ const Exercise = () => {
             )}
           </div>
           <div className="flex mt-6 justify-between">
-            <Link href="/" class="orange_btn ">
+            <Link href="/" className="orange_btn ">
               Go back
             </Link>
-            <button disabled type="button" class="orange_btn">
+            <button disabled type="button" className="orange_btn">
               <svg
                 aria-hidden="true"
                 role="status"
-                class="inline w-4 h-4 me-3 text-white animate-spin"
+                className="inline w-4 h-4 me-3 text-white animate-spin"
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
