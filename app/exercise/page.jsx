@@ -128,11 +128,11 @@ const Exercise = () => {
             )}
           </div>
           <div className="flex mt-6 justify-between">
-            <Link href="/" class="orange_btn ">
+            <Link href="/" className="orange_btn ">
               Go back
             </Link>
             <Link
-              href="/"
+              href="/exercise/programs"
               disabled={!showSuccessAlert}
               className={`orange_btn ${
                 !showSuccessAlert ? "opacity-50 cursor-not-allowed" : ""
