@@ -111,7 +111,10 @@ const Exercise = () => {
               ></div>
             </div>
           </label>
-          <div className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md">
+          <div
+            className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md"
+            id="webcam-container"
+          >
             {openWebcam ? (
               <Webcam sendKeypointsCount={handleKeypointsCount} />
             ) : (
@@ -128,13 +131,6 @@ const Exercise = () => {
             <Link href="/" class="orange_btn ">
               Go back
             </Link>
-<<<<<<< Updated upstream
-            <button disabled type="button" class="orange_btn">
-              <svg
-                aria-hidden="true"
-                role="status"
-                class="inline w-4 h-4 me-3 text-white animate-spin"
-=======
             <Link
               href="/"
               disabled={!showSuccessAlert}
@@ -148,7 +144,6 @@ const Exercise = () => {
                 className={`inline w-4 h-4 me-3 text-white animate-spin ${
                   !showSuccessAlert ? "" : "hidden"
                 }`}
->>>>>>> Stashed changes
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"

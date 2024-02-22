@@ -1,19 +1,20 @@
+"use client";
 import React, { useEffect, useRef, useState } from "react";
 import { ReactP5Wrapper } from "@p5-wrapper/react";
-import * as poseDetection from "@tensorflow-models/pose-detection";
-import * as tf from "@tensorflow/tfjs-core";
+import _ as poseDetection from "@tensorflow-models/pose-detection";
+import _ as tf from "@tensorflow/tfjs-core";
 
-const Webcam = ({ sendKeypointsCount }) => {
-  const [modelLoaded, setModelLoaded] = useState(false);
-  const [detector, setDetector] = useState(null);
-  const videoRef = useRef(null);
-  const posesRef = useRef([]);
+const Webcam = () => {
+const [modelLoaded, setModelLoaded] = useState(false);
+const [detector, setDetector] = useState(null);
+const videoRef = useRef(null);
+const posesRef = useRef([]);
 
-  useEffect(() => {
-    const loadModel = async () => {
-      try {
-        await tf.setBackend("webgpu");
-        console.log("TensorFlow.js backend set to webgpu.");
+useEffect(() => {
+const loadModel = async () => {
+try {
+await tf.setBackend("webgpu");
+console.log("TensorFlow.js backend set to webgpu.");
 
         await tf.ready();
         console.log("TensorFlow.js backend is ready.");
@@ -36,38 +37,40 @@ const Webcam = ({ sendKeypointsCount }) => {
       if (detector) {
         detector.dispose(); // Dispose the model when unmounting
       }
-      /* if (videoRef.current) {
+      if (videoRef.current) {
         videoRef.current.srcObject.getTracks().forEach((track) => track.stop()); // Stop webcam tracks
-      } */
-    };
-  }, []);
-
-  useEffect(() => {
-    const setupWebcam = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          // Wait for the video to be ready before setting modelLoaded to true
-          videoRef.current.onloadedmetadata = () => {
-            setModelLoaded(true);
-          };
-        }
-      } catch (error) {
-        console.error("Error accessing camera:", error);
       }
     };
+
+}, []);
+
+useEffect(() => {
+const setupWebcam = async () => {
+try {
+const stream = await navigator.mediaDevices.getUserMedia({
+video: true,
+});
+if (videoRef.current) {
+videoRef.current.srcObject = stream;
+// Wait for the video to be ready before setting modelLoaded to true
+videoRef.current.onloadedmetadata = () => {
+setModelLoaded(true);
+};
+}
+} catch (error) {
+console.error("Error accessing camera:", error);
+}
+};
 
     if (!modelLoaded) {
       setupWebcam();
     }
-  }, [modelLoaded]);
 
-  useEffect(() => {
-    const getPoses = async () => {
-      if (!detector || !videoRef.current) return;
+}, [modelLoaded]);
+
+useEffect(() => {
+const getPoses = async () => {
+if (!detector || !videoRef.current) return;
 
       const poses = await detector.estimatePoses(videoRef.current.elt);
       console.log(poses);
@@ -82,10 +85,13 @@ const Webcam = ({ sendKeypointsCount }) => {
         clearInterval(intervalId);
       };
     }
-  }, [modelLoaded]);
 
-  const sketch = (p5) => {
-    let video;
+}, [modelLoaded]);
+
+// Your p5.js sketch code for drawing keypoints using posesRef.current
+
+const sketch = (p5) => {
+let video;
 
     p5.setup = () => {
       const container = document.getElementById("webcam-container");
@@ -98,7 +104,7 @@ const Webcam = ({ sendKeypointsCount }) => {
     };
 
     p5.draw = () => {
-      p5.background(0);
+      p5.background(255);
       if (videoRef.current && modelLoaded && posesRef.current.length > 0) {
         p5.image(videoRef.current, 0, 0, p5.width, p5.height);
         drawKeypoints(p5);
@@ -106,7 +112,6 @@ const Webcam = ({ sendKeypointsCount }) => {
     };
 
     const drawKeypoints = (p5) => {
-      let Numkeypoints = 0;
       const poses = posesRef.current;
       const colors = {
         nose: [255, 0, 0],
@@ -134,7 +139,6 @@ const Webcam = ({ sendKeypointsCount }) => {
         pose.keypoints.forEach((keypoint) => {
           const { x, y, score, name } = keypoint;
           if (score > 0.3) {
-            Numkeypoints++;
             const color = colors[name];
             p5.fill(color);
             // Adjust the coordinates to match the canvas's coordinate system
@@ -145,11 +149,11 @@ const Webcam = ({ sendKeypointsCount }) => {
           }
         });
       });
-      sendKeypointsCount(Numkeypoints); // Send the number of keypoints to the parent component
     };
-  };
 
-  return <ReactP5Wrapper sketch={sketch} />;
+};
+
+return <ReactP5Wrapper sketch={sketch} />;
 };
 
 export default Webcam;
