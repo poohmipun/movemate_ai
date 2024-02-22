@@ -8,13 +8,29 @@ const Exercise = () => {
   const [openWebcam, setOpenWebcam] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showWarningAlert, setShowWarningAlert] = useState(true);
+  const [numKeypoints, setNumKeypoints] = useState(0);
+  const [buttonClicked, setButtonClicked] = useState(false);
 
+  const handleKeypointsCount = (count) => {
+    setNumKeypoints(count);
+    if (count === 17) {
+      setShowSuccessAlert(true);
+      setShowWarningAlert(false);
+    } else {
+      setShowSuccessAlert(false);
+      setShowWarningAlert(true);
+    }
+  };
+  const handleButtonClick = () => {
+    if (showSuccessAlert && !buttonClicked) {
+      setButtonClicked(true);
+      // Your logic for handling button click here
+    }
+  };
   return (
-    <div className="w-full h-full flex flex-col ">
+    <div className="w-full h-full flex flex-col">
       <div className="flex flex-col gap-10 lg:flex-row max-h-screen">
-        {/* Left side content can be added here */}
-        <div className="w-full h-screen font-bold text-white text-2xl sm:text-3xl pt-4 pb-2 ">
-          {/* Alert components */}
+        <div className="w-full h-screen font-bold text-white text-2xl sm:text-3xl pt-4 pb-2">
           {showSuccessAlert && (
             <div
               className="flex items-center p-4 mb-4 text-sm text-green-800 rounded-lg bg-green-50 dark:bg-gray-800 dark:text-green-400"
@@ -31,8 +47,8 @@ const Exercise = () => {
               </svg>
               <span className="sr-only">Info</span>
               <div>
-                <span className="font-medium">Success alert!</span> Change a few
-                things up and try submitting again.
+                <span className="font-medium">Success alert!</span> Your webcam
+                is capturing the full body. Ready for tracking!
               </div>
             </div>
           )}
@@ -67,7 +83,7 @@ const Exercise = () => {
               }`}
               aria-hidden="true"
               xmlns="http://www.w3.org/2000/svg"
-              fill={openWebcam ? "currentColor" : "white"} // Change fill based on openWebcam state
+              fill={openWebcam ? "currentColor" : "white"}
               viewBox="0 0 24 24"
             >
               <path
@@ -78,8 +94,6 @@ const Exercise = () => {
                 d="M14 6H4a1 1 0 0 0-1 1v10c0 .6.4 1 1 1h10c.6 0 1-.4 1-1V7c0-.6-.4-1-1-1Zm7 11-6-2V9l6-2v10Z"
               />
             </svg>
-
-            {/* Toggle button */}
             <div className="flex">
               <input
                 type="checkbox"
@@ -99,7 +113,7 @@ const Exercise = () => {
           </label>
           <div className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md">
             {openWebcam ? (
-              <Webcam className="" />
+              <Webcam sendKeypointsCount={handleKeypointsCount} />
             ) : (
               <Image
                 src="/images/preview.svg"
@@ -114,11 +128,27 @@ const Exercise = () => {
             <Link href="/" class="orange_btn ">
               Go back
             </Link>
+<<<<<<< Updated upstream
             <button disabled type="button" class="orange_btn">
               <svg
                 aria-hidden="true"
                 role="status"
                 class="inline w-4 h-4 me-3 text-white animate-spin"
+=======
+            <Link
+              href="/"
+              disabled={!showSuccessAlert}
+              className={`orange_btn ${
+                !showSuccessAlert ? "opacity-50 cursor-not-allowed" : ""
+              }`}
+            >
+              <svg
+                aria-hidden="true"
+                role="status"
+                className={`inline w-4 h-4 me-3 text-white animate-spin ${
+                  !showSuccessAlert ? "" : "hidden"
+                }`}
+>>>>>>> Stashed changes
                 viewBox="0 0 100 101"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
@@ -132,8 +162,10 @@ const Exercise = () => {
                   fill="currentColor"
                 />
               </svg>
-              Loading...
-            </button>
+              {showSuccessAlert
+                ? "Choose Program"
+                : "Ensure webcam captures full body"}
+            </Link>
           </div>
         </div>
       </div>

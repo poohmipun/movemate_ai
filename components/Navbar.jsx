@@ -10,7 +10,7 @@ const Navbar = () => {
     <>
       <nav className="flex-between w-full mb-10 pt-12 pb-4 ">
         <Link href="/" className="flex gap-2 flex-center logo_text">
-          MoveMateAI 🔥
+        🔥MoveMateAI 
         </Link>
         <div className="sm:flex hidden">
           <div className="flex gap-3 md:gap-5">
