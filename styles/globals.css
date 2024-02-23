@@ -84,6 +84,9 @@ video {
   }
 }
 
+.p5Canvas{
+  object-fit: contain;
+}
 /* Tailwind Styles */
 
 .app {
@@ -91,7 +94,7 @@ video {
 }
 
 .orange_btn {
-  @apply rounded-full border bg-gradient-to-bl from-orange-600 to-red-500  border-none py-1.5 px-6 text-white transition-all hover:bg-white hover:text-yellow-900 text-center text-base font-bold flex items-center justify-center;
+  @apply rounded-full border bg-gradient-to-bl from-orange-600 to-red-500  border-none py-2 px-2 text-xs  text-white transition-all hover:bg-white hover:text-yellow-900 text-center  font-bold flex items-center justify-center sm:px-3 py-1.5 text-base;
 }
 
 .outline_btn {

@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import Webcam from "@components/Webcam";
+import KeypointDetector from "@components/KeypointDetector";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -112,11 +112,11 @@ const Exercise = () => {
             </div>
           </label>
           <div
-            className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md"
+            className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md overflow-hidden"
             id="webcam-container"
           >
             {openWebcam ? (
-              <Webcam sendKeypointsCount={handleKeypointsCount} />
+              <KeypointDetector sendKeypointsCount={handleKeypointsCount} />
             ) : (
               <Image
                 src="/images/preview.svg"

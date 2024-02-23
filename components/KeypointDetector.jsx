@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { ReactP5Wrapper } from "@p5-wrapper/react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import * as tf from "@tensorflow/tfjs-core";
+import "@tensorflow/tfjs-backend-webgl";
 
 const KeypointDetectorSketch = (p5, props) => {
   const { sendKeypointsCount } = props;
@@ -41,7 +42,8 @@ const KeypointDetectorSketch = (p5, props) => {
 
   const setupDetector = async () => {
     try {
-      await tf.ready();
+      await tf.setBackend("webgl");
+      tf.ready();
       console.log("TensorFlow.js is ready.");
 
       detector = await poseDetection.createDetector(
