@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-import KeypointDetector from "@components/KeypointDetector";
+import Webcam from "@components/Webcam";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -116,7 +116,7 @@ const Exercise = () => {
             id="webcam-container"
           >
             {openWebcam ? (
-              <KeypointDetector sendKeypointsCount={handleKeypointsCount} />
+              <Webcam sendKeypointsCount={handleKeypointsCount} />
             ) : (
               <Image
                 src="/images/preview.svg"
@@ -132,7 +132,7 @@ const Exercise = () => {
               Go back
             </Link>
             <Link
-              href="/exercise/programs"
+              href="/"
               disabled={!showSuccessAlert}
               className={`orange_btn ${
                 !showSuccessAlert ? "opacity-50 cursor-not-allowed" : ""
