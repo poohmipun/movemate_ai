@@ -1,8 +1,14 @@
+'use client'
 import React, { useEffect, useRef, useState } from "react";
-import { ReactP5Wrapper } from "@p5-wrapper/react";
+
+// Import ReactP5Wrapper conditionally to prevent issues with server-side rendering
+let ReactP5Wrapper;
+if (typeof window !== "undefined") {
+  ReactP5Wrapper = require("@p5-wrapper/react").ReactP5Wrapper;
+}
+
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import * as tf from "@tensorflow/tfjs-core";
-
 const Webcam = ({ sendKeypointsCount }) => {
   const [modelLoaded, setModelLoaded] = useState(false);
   const [detector, setDetector] = useState(null);
@@ -36,9 +42,6 @@ const Webcam = ({ sendKeypointsCount }) => {
       if (detector) {
         detector.dispose(); // Dispose the model when unmounting
       }
-      /* if (videoRef.current) {
-        videoRef.current.srcObject.getTracks().forEach((track) => track.stop()); // Stop webcam tracks
-      } */
     };
   }, []);
 
@@ -48,7 +51,7 @@ const Webcam = ({ sendKeypointsCount }) => {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: true,
         });
-        if (videoRef.current) {
+        if (videoRef.current && typeof window !== "undefined") {
           videoRef.current.srcObject = stream;
           // Wait for the video to be ready before setting modelLoaded to true
           videoRef.current.onloadedmetadata = () => {
@@ -88,15 +91,17 @@ const Webcam = ({ sendKeypointsCount }) => {
     let video;
 
     p5.setup = () => {
-      const container = document.getElementById("webcam-container");
-      const w = container.offsetWidth;
-      const h = container.offsetHeight;
-      p5.createCanvas(w, h);
-      video = p5.createCapture(p5.VIDEO);
-      video.hide();
-      videoRef.current = video;
+      // Check if window is defined before accessing the DOM
+      if (typeof window !== "undefined") {
+        const container = document.getElementById("webcam-container");
+        const w = container.offsetWidth;
+        const h = container.offsetHeight;
+        p5.createCanvas(w, h);
+        video = p5.createCapture(p5.VIDEO);
+        video.hide();
+        videoRef.current = video;
+      }
     };
-
     p5.draw = () => {
       if (videoRef.current && modelLoaded && posesRef.current.length > 0) {
         p5.image(videoRef.current, 0, 0, p5.width, p5.height);
@@ -105,7 +110,7 @@ const Webcam = ({ sendKeypointsCount }) => {
     };
 
     const drawKeypoints = (p5) => {
-      let Numkeypoints = 0;
+      let numKeypoints = 0;
       const poses = posesRef.current;
       const colors = {
         nose: [255, 0, 0],
@@ -126,12 +131,12 @@ const Webcam = ({ sendKeypointsCount }) => {
         left_ankle: [165, 42, 42],
         right_ankle: [0, 0, 0],
       };
-      
+
       poses.forEach((pose) => {
         pose.keypoints.forEach((keypoint) => {
           const { x, y, score, name } = keypoint;
           if (score > 0.3) {
-            Numkeypoints++;
+            numKeypoints++;
             const color = colors[name];
             p5.fill(color);
             // Adjust the coordinates to match the canvas's coordinate system
@@ -142,7 +147,7 @@ const Webcam = ({ sendKeypointsCount }) => {
           }
         });
       });
-      sendKeypointsCount(Numkeypoints); // Send the number of keypoints to the parent component
+      sendKeypointsCount(numKeypoints); // Send the number of keypoints to the parent component
     };
   };
 
