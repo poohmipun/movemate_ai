@@ -8,7 +8,7 @@ import * as poseDetection from "@tensorflow-models/pose-detection";
 import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
 
-const KeypointDetectorSketch = (p5, props) => {
+const WebcamSketch = (p5, props) => {
   const { sendKeypointsCount } = props;
   let video;
   let detector;
@@ -71,7 +71,7 @@ const KeypointDetectorSketch = (p5, props) => {
 
   const drawKeypoints = (keypoints) => {
     let count = 0;
-
+  
     keypoints.forEach((keypoint) => {
       const { x, y, score, name } = keypoint;
       if (score > 0.3) {
@@ -85,12 +85,14 @@ const KeypointDetectorSketch = (p5, props) => {
         p5.text(name, canvasX, canvasY - 5); // Draw keypoint name
       }
     });
+  
+    setKeypointsCount(count); // Move this line before the return statement
     return count;
-    setKeypointsCount(count);
   };
+  
 };
 
-const KeypointDetector = () => {
+const Webcam = () => {
   const [keypointsCount, setKeypointsCount] = useState(0);
 
   const handleSendKeypointsCount = (count) => {
@@ -100,7 +102,7 @@ const KeypointDetector = () => {
   return (
     <ReactP5Wrapper
       sketch={(p) =>
-        KeypointDetectorSketch(p, {
+        WebcamSketch(p, {
           sendKeypointsCount: handleSendKeypointsCount,
         })
       }
@@ -108,4 +110,4 @@ const KeypointDetector = () => {
   );
 };
 
-export default KeypointDetector;
+export default Webcam;
