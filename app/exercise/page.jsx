@@ -1,17 +1,29 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Webcam from "@components/Webcam";
 import Image from "next/image";
 import Link from "next/link";
 
 const Exercise = () => {
+  const webcamContainerRef = useRef(null);
+  const [containerWidth, setContainerWidth] = useState(0);
+  const [containerHeight, setContainerHeight] = useState(0);
   const [openWebcam, setOpenWebcam] = useState(false);
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showWarningAlert, setShowWarningAlert] = useState(true);
   const [numKeypoints, setNumKeypoints] = useState(0);
   const [buttonClicked, setButtonClicked] = useState(false);
+  const [keypointsCount, setKeypointsCount] = useState(0);
 
-  const handleKeypointsCount = (count) => {
+  useEffect(() => {
+    if (webcamContainerRef.current) {
+      const { offsetWidth, offsetHeight } = webcamContainerRef.current;
+      setContainerWidth(offsetWidth);
+      setContainerHeight(offsetHeight);
+    }
+  }, []);
+
+  const handleSendKeypointsCount = (count) => {
     setNumKeypoints(count);
     if (count === 17) {
       setShowSuccessAlert(true);
@@ -112,11 +124,16 @@ const Exercise = () => {
             </div>
           </label>
           <div
-            className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md overflow-hidden"
+            ref={webcamContainerRef}
             id="webcam-container"
+            className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md overflow-hidden"
           >
             {openWebcam ? (
-              <Webcam sendKeypointsCount={handleKeypointsCount} />
+              <Webcam
+                onKeypointsCountChange={handleSendKeypointsCount}
+                containerWidth={containerWidth}
+                containerHeight={containerHeight}
+              />
             ) : (
               <Image
                 src="/images/preview.svg"
