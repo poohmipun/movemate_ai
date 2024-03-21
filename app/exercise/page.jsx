@@ -25,20 +25,20 @@ const Exercise = () => {
 
   const handleSendKeypointsCount = (count) => {
     setNumKeypoints(count);
-    if (count === 17) {
+    if (count === 17 && !showSuccessAlert) {
       setShowSuccessAlert(true);
       setShowWarningAlert(false);
-    } else {
-      setShowSuccessAlert(false);
+    } else if (!showSuccessAlert && count !== 17) {
       setShowWarningAlert(true);
     }
   };
+
   const handleButtonClick = () => {
     if (showSuccessAlert && !buttonClicked) {
       setButtonClicked(true);
-      // Your logic for handling button click here
     }
   };
+
   return (
     <div className="w-full h-full flex flex-col">
       <div className="flex flex-col gap-10 lg:flex-row max-h-screen">
@@ -80,8 +80,8 @@ const Exercise = () => {
               </svg>
               <span className="sr-only">Info</span>
               <div>
-                <span className="font-medium">Warning alert!</span> Change a few
-                things up and try submitting again.
+                <span className="font-medium">Warning alert!</span> Please
+                ensure that the camera is capable of capturing your entire body.
               </div>
             </div>
           )}
@@ -140,6 +140,7 @@ const Exercise = () => {
                 width={100}
                 height={100}
                 className="h-full w-1/2 p-12"
+                priority
                 alt="preview"
               />
             )}

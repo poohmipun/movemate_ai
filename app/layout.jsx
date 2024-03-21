@@ -3,8 +3,12 @@ import Navbar from "@components/Navbar";
 
 export const metadata = {
   title: "Movemate AI",
-  description: "Virtual Personal Fitness Trainer Web application ",
+  description: "Virtual Personal Fitness Trainer Web application",
+  icons: {
+    icon: "/icon.png",
+  },
 };
+
 const RootLayout = ({ children }) => {
   return (
     <html lang="en">
