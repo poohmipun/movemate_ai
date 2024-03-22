@@ -1,8 +1,12 @@
-import React, { useState, useEffect } from "react";
-import CanvasSketch from "./CanvasSketch";
+import React, { useState, useEffect, useMemo } from "react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import * as tf from "@tensorflow/tfjs-core";
 import "@tensorflow/tfjs-backend-webgl";
+
+let ReactP5Wrapper;
+if (typeof window !== "undefined") {
+  ReactP5Wrapper = require("@p5-wrapper/react").ReactP5Wrapper;
+}
 
 const Webcam = ({
   onKeypointsCountChange,
@@ -12,8 +16,8 @@ const Webcam = ({
   const [videoStream, setVideoStream] = useState(null);
   const [detector, setDetector] = useState(null);
   const [loading, setLoading] = useState({
-    step1: true, // Webcam setup
-    step2: true, // Model loading
+    step1: true,
+    step2: true,
   });
 
   useEffect(() => {
@@ -29,6 +33,20 @@ const Webcam = ({
           poseDetection.SupportedModels.MoveNet,
           {
             modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+            edges: {
+              "5,7": "m",
+              "7,9": "m",
+              "6,8": "c",
+              "8,10": "c",
+              "5,6": "y",
+              "5,11": "m",
+              "6,12": "c",
+              "11,12": "y",
+              "11,13": "m",
+              "13,15": "m",
+              "12,14": "c",
+              "14,16": "c",
+            },
           }
         );
         console.log("Pose detection model is loaded.");
@@ -57,6 +75,93 @@ const Webcam = ({
 
     initVideoStream();
   }, []);
+  const edges = {
+    "5,7": "m",
+    "7,9": "m",
+    "6,8": "c",
+    "8,10": "c",
+    "5,6": "y",
+    "5,11": "m",
+    "6,12": "c",
+    "11,12": "y",
+    "11,13": "m",
+    "13,15": "m",
+    "12,14": "c",
+    "14,16": "c",
+  };
+  const sketch = useMemo(() => {
+    return (p5) => {
+      let video;
+
+      p5.setup = () => {
+        const w = containerWidth;
+        const h = containerHeight;
+        p5.createCanvas(w, h);
+        video = p5.createCapture(p5.VIDEO);
+        video.hide();
+        p5.frameRate(30); // Set framerate to 30fps
+      };
+
+      p5.draw = async () => {
+        const predictions = await detector.estimatePoses(video.elt);
+        p5.image(video, 0, 0, p5.width, p5.height);
+        const filteredKeypoints = predictions[0].keypoints.filter(
+          (keypoint) => keypoint.score > 0.3
+        );
+
+        filteredKeypoints.forEach(({ x, y, score }) => {
+          p5.fill(255);
+          p5.noStroke();
+          const canvasX = (x / video.elt.videoWidth) * p5.width;
+          const canvasY = (y / video.elt.videoHeight) * p5.height;
+          p5.ellipse(canvasX, canvasY, 5, 5);
+        });
+
+        // Calculate edges and check confidence threshold
+        
+        if (predictions && predictions.length > 0) {
+          const confidence_threshold = 0.5;
+          for (const [key, value] of Object.entries(edges)) {
+            const p = key.split(",");
+            const p1 = p[0];
+            const p2 = p[1];
+
+            const keypoint1 = predictions[0].keypoints[p1];
+            const keypoint2 = predictions[0].keypoints[p2];
+
+            if (
+              keypoint1.score > confidence_threshold &&
+              keypoint2.score > confidence_threshold
+            ) {
+              p5.strokeWeight(2);
+              // Set default color
+              p5.stroke("rgb(255, 255, 255)");
+
+              // Normalize coordinates
+              const normX1 = keypoint1.x / video.elt.videoWidth;
+              const normY1 = keypoint1.y / video.elt.videoHeight;
+              const normX2 = keypoint2.x / video.elt.videoWidth;
+              const normY2 = keypoint2.y / video.elt.videoHeight;
+
+              // Transform to canvas coordinates
+              const canvasX1 = normX1 * p5.width;
+              const canvasY1 = normY1 * p5.height;
+              const canvasX2 = normX2 * p5.width;
+              const canvasY2 = normY2 * p5.height;
+
+              p5.line(canvasX1, canvasY1, canvasX2, canvasY2);
+            }
+          }
+        }
+      };
+    };
+  }, [detector, onKeypointsCountChange, containerWidth, containerHeight]);
+
+  useEffect(() => {
+    if (videoStream && detector) {
+      console.log("Video stream and detector are ready.");
+    }
+  }, [videoStream, detector]);
 
   if (loading.step1 || loading.step2) {
     return (
@@ -86,7 +191,7 @@ const Webcam = ({
                 </div>
               ) : (
                 <svg
-                className="w-6 h-6 me-2 text-green-500 dark:text-green-400 flex-shrink-0"
+                  className="w-6 h-6 me-2 text-green-500 dark:text-green-400 flex-shrink-0"
                   aria-hidden="true"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="currentColor"
@@ -142,16 +247,7 @@ const Webcam = ({
       </div>
     );
   }
-
-  return (
-    <CanvasSketch
-      videoStream={videoStream}
-      detector={detector}
-      onKeypointsCountChange={onKeypointsCountChange}
-      containerWidth={containerWidth}
-      containerHeight={containerHeight}
-    />
-  );
+  return <ReactP5Wrapper sketch={sketch} />;
 };
 
 export default Webcam;
