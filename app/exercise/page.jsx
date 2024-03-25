@@ -146,7 +146,7 @@ const Exercise = () => {
             )}
           </div>
           <div className="flex mt-6 justify-between">
-            <Link href="/" className="orange_btn ">
+            <Link href="/programe" className="orange_btn ">
               Go back
             </Link>
             <Link

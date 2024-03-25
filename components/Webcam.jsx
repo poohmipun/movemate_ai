@@ -13,22 +13,80 @@ const Webcam = ({
   containerWidth,
   containerHeight,
 }) => {
+  const [keypoints, setKeypoints] = useState([]);
+  const [Numkeypoint, setNumkeypoint] = useState(0);
   const [videoStream, setVideoStream] = useState(null);
   const [detector, setDetector] = useState(null);
   const [loading, setLoading] = useState({
     step1: true,
     step2: true,
   });
+  const edges = {
+    "5,7": "m",
+    "7,9": "m",
+    "6,8": "c",
+    "8,10": "c",
+    "5,6": "y",
+    "5,11": "m",
+    "6,12": "c",
+    "11,12": "y",
+    "11,13": "m",
+    "13,15": "m",
+    "12,14": "c",
+    "14,16": "c",
+  };
 
   useEffect(() => {
-    const setupDetector = async () => {
-      try {
-        await tf.setBackend("webgl");
-        await tf.ready();
-        console.log("TensorFlow.js is ready.");
+    const init = async () => {
+      const initVideoStream = async () => {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: true,
+          });
+          setVideoStream(stream);
+          setLoading((prevState) => ({ ...prevState, step1: false }));
+        } catch (error) {
+          console.error("Error accessing webcam:", error);
+        }
+      };
+      initVideoStream();
+      const currentBackend = tf.getBackend();
+      if (currentBackend !== "webgl") {
+        try {
+          await tf.setBackend("webgl");
+          await tf.ready();
+          console.log("TensorFlow.js is ready.");
 
+          setLoading((prevState) => ({ ...prevState, step2: true }));
+
+          const det = await poseDetection.createDetector(
+            poseDetection.SupportedModels.MoveNet,
+            {
+              modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
+              edges: {
+                "5,7": "m",
+                "7,9": "m",
+                "6,8": "c",
+                "8,10": "c",
+                "5,6": "y",
+                "5,11": "m",
+                "6,12": "c",
+                "11,12": "y",
+                "11,13": "m",
+                "13,15": "m",
+                "12,14": "c",
+                "14,16": "c",
+              },
+            }
+          );
+          console.log("Pose detection model is loaded.");
+          setDetector(det);
+          setLoading((prevState) => ({ ...prevState, step2: false }));
+        } catch (error) {
+          console.error("Error loading pose detection model:", error);
+        }
+      } else {
         setLoading((prevState) => ({ ...prevState, step2: true }));
-
         const det = await poseDetection.createDetector(
           poseDetection.SupportedModels.MoveNet,
           {
@@ -52,44 +110,80 @@ const Webcam = ({
         console.log("Pose detection model is loaded.");
         setDetector(det);
         setLoading((prevState) => ({ ...prevState, step2: false }));
-      } catch (error) {
-        console.error("Error loading pose detection model:", error);
       }
     };
 
-    setupDetector();
+    init();
   }, []);
 
   useEffect(() => {
-    const initVideoStream = async () => {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: true,
-        });
-        setVideoStream(stream);
-        setLoading((prevState) => ({ ...prevState, step1: false }));
-      } catch (error) {
-        console.error("Error accessing webcam:", error);
+    const interval = setInterval(() => {
+      // Calculate the number of keypoints
+      const numKeypoints = keypoints.filter(
+        (keypoint) => keypoint.score > 0.3
+      ).length;
+      // Update the state with the new value
+      setNumkeypoint(numKeypoints);
+      // Trigger the callback with the new value
+      onKeypointsCountChange(numKeypoints);
+    }, 100);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [keypoints, onKeypointsCountChange]);
+
+  
+  const sketch = useMemo(() => {
+    const drawKeypoints = (predictions, video, p5) => {
+      const filteredKeypoints = predictions[0].keypoints.filter(
+        (keypoint) => keypoint.score > 0.3
+      );
+
+      filteredKeypoints.forEach(({ x, y, score }) => {
+        p5.fill(255);
+        p5.noStroke();
+        const canvasX = (x / video.elt.videoWidth) * p5.width;
+        const canvasY = (y / video.elt.videoHeight) * p5.height;
+        p5.ellipse(canvasX, canvasY, 5, 5);
+      });
+    };
+    const drawSkeleton = (predictions, video, p5) => {
+      if (predictions && predictions.length > 0) {
+        const confidence_threshold = 0.5;
+        for (const [key, value] of Object.entries(edges)) {
+          const p = key.split(",");
+          const p1 = p[0];
+          const p2 = p[1];
+
+          const keypoint1 = predictions[0].keypoints[p1];
+          const keypoint2 = predictions[0].keypoints[p2];
+
+          if (
+            keypoint1.score > confidence_threshold &&
+            keypoint2.score > confidence_threshold
+          ) {
+            p5.strokeWeight(2);
+            // Set default color
+            p5.stroke("rgb(255, 255, 255)");
+
+            // Normalize coordinates
+            const normX1 = keypoint1.x / video.elt.videoWidth;
+            const normY1 = keypoint1.y / video.elt.videoHeight;
+            const normX2 = keypoint2.x / video.elt.videoWidth;
+            const normY2 = keypoint2.y / video.elt.videoHeight;
+
+            // Transform to canvas coordinates
+            const canvasX1 = normX1 * p5.width;
+            const canvasY1 = normY1 * p5.height;
+            const canvasX2 = normX2 * p5.width;
+            const canvasY2 = normY2 * p5.height;
+
+            p5.line(canvasX1, canvasY1, canvasX2, canvasY2);
+          }
+        }
       }
     };
-
-    initVideoStream();
-  }, []);
-  const edges = {
-    "5,7": "m",
-    "7,9": "m",
-    "6,8": "c",
-    "8,10": "c",
-    "5,6": "y",
-    "5,11": "m",
-    "6,12": "c",
-    "11,12": "y",
-    "11,13": "m",
-    "13,15": "m",
-    "12,14": "c",
-    "14,16": "c",
-  };
-  const sketch = useMemo(() => {
     return (p5) => {
       let video;
 
@@ -99,69 +193,24 @@ const Webcam = ({
         p5.createCanvas(w, h);
         video = p5.createCapture(p5.VIDEO);
         video.hide();
-        p5.frameRate(30); // Set framerate to 30fps
+        p5.frameRate(30);
       };
 
       p5.draw = async () => {
+        p5.background(255);
         const predictions = await detector.estimatePoses(video.elt);
         p5.image(video, 0, 0, p5.width, p5.height);
-        const filteredKeypoints = predictions[0].keypoints.filter(
-          (keypoint) => keypoint.score > 0.3
-        );
-
-        filteredKeypoints.forEach(({ x, y, score }) => {
-          p5.fill(255);
-          p5.noStroke();
-          const canvasX = (x / video.elt.videoWidth) * p5.width;
-          const canvasY = (y / video.elt.videoHeight) * p5.height;
-          p5.ellipse(canvasX, canvasY, 5, 5);
-        });
-
-        // Calculate edges and check confidence threshold
-        
         if (predictions && predictions.length > 0) {
-          const confidence_threshold = 0.5;
-          for (const [key, value] of Object.entries(edges)) {
-            const p = key.split(",");
-            const p1 = p[0];
-            const p2 = p[1];
-
-            const keypoint1 = predictions[0].keypoints[p1];
-            const keypoint2 = predictions[0].keypoints[p2];
-
-            if (
-              keypoint1.score > confidence_threshold &&
-              keypoint2.score > confidence_threshold
-            ) {
-              p5.strokeWeight(2);
-              // Set default color
-              p5.stroke("rgb(255, 255, 255)");
-
-              // Normalize coordinates
-              const normX1 = keypoint1.x / video.elt.videoWidth;
-              const normY1 = keypoint1.y / video.elt.videoHeight;
-              const normX2 = keypoint2.x / video.elt.videoWidth;
-              const normY2 = keypoint2.y / video.elt.videoHeight;
-
-              // Transform to canvas coordinates
-              const canvasX1 = normX1 * p5.width;
-              const canvasY1 = normY1 * p5.height;
-              const canvasX2 = normX2 * p5.width;
-              const canvasY2 = normY2 * p5.height;
-
-              p5.line(canvasX1, canvasY1, canvasX2, canvasY2);
-            }
-          }
+          const filteredKeypoints = predictions[0].keypoints.filter(
+            (keypoint) => keypoint.score > 0.3
+          );
+          setKeypoints(predictions[0].keypoints);
+          drawKeypoints(predictions, video, p5);
+          drawSkeleton(predictions, video, p5);
         }
       };
     };
-  }, [detector, onKeypointsCountChange, containerWidth, containerHeight]);
-
-  useEffect(() => {
-    if (videoStream && detector) {
-      console.log("Video stream and detector are ready.");
-    }
-  }, [videoStream, detector]);
+  }, [detector, containerWidth, containerHeight]);
 
   if (loading.step1 || loading.step2) {
     return (

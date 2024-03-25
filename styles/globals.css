@@ -86,6 +86,7 @@ video {
 
 .p5Canvas{
   object-fit: contain;
+  transform: translate3d(0, 0, 0);
 }
 /* Tailwind Styles */
 
