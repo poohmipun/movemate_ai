@@ -84,17 +84,18 @@ video {
   }
 }
 
-.p5Canvas{
+.p5Canvas {
   object-fit: contain;
+  transform: translate3d(0, 0, 0);
 }
 /* Tailwind Styles */
 
 .app {
-  @apply relative z-10 flex justify-center items-center flex-col max-w-full mx-auto sm:px-16 px-6;
+  @apply relative z-10 flex justify-center items-center flex-col max-w-full mx-auto;
 }
 
 .orange_btn {
-  @apply rounded-full border bg-gradient-to-bl from-orange-600 to-red-500  border-none py-2 px-2 text-xs  text-white transition-all hover:bg-white hover:text-yellow-900 text-center  font-bold flex items-center justify-center sm:px-3 py-1.5 text-base;
+  @apply rounded-full border bg-gradient-to-bl from-orange-600 to-red-500  focus:outline-none focus:ring focus:ring-red-300 border-none py-2 px-2 text-xs  text-white transition-all hover:bg-white hover:text-yellow-900 text-center font-bold flex items-center justify-center sm:px-3 py-0 text-sm;
 }
 
 .outline_btn {
@@ -153,11 +154,11 @@ video {
 
 /* Nav Component */
 .logo_text {
-  @apply max-sm:hidden font-extrabold text-xl sm:text-3xl tracking-wide bg-gradient-to-r from-red-500  to-orange-500 inline-block text-transparent bg-clip-text;
+  @apply max-sm:hidden font-extrabold text-xl sm:text-3xl tracking-wide text-white;
 }
 
 .dropdown {
-  @apply absolute right-0 top-full mt-3 w-full p-5 rounded-lg bg-white min-w-[210px] flex flex-col gap-2 justify-end items-end;
+  @apply absolute right-0 top-full mt-3 w-full p-2 rounded-lg bg-white min-w-max flex flex-col gap-2 justify-end items-end;
 }
 
 .dropdown_link {

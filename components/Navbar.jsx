@@ -2,21 +2,25 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-
+import { Button } from "flowbite-react";
 const Navbar = () => {
   const [toggleDropdown, setToggleDropdown] = useState(false);
 
   return (
     <>
-      <nav className="flex-between w-full mb-10 pt-12 pb-4 ">
+      <nav className="flex-between w-full mb-10 pt-12 pb-4 sticky">
         <Link href="/" className="flex gap-2 flex-center logo_text">
-        🔥MoveMateAI 
+          🔥MoveMate AI
         </Link>
         <div className="sm:flex hidden">
           <div className="flex gap-3 md:gap-5">
-            <Link href="/exercise" className="orange_btn">
-              Demo
-            </Link>
+            <Button
+              className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-red-800 border-none"
+              as={Link}
+              href="/webcamtester"
+            >
+              Let's Start
+            </Button>
           </div>
         </div>
         <div className="sm:hidden flex relative">
@@ -32,9 +36,13 @@ const Navbar = () => {
             {toggleDropdown && (
               <div className="dropdown">
                 <div className="flex gap-3 md:gap-5">
-                  <Link href="/exercise" className="orange_btn">
-                    Demo
-                  </Link>
+                  <Button
+                    className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-red-800 border-none"
+                    as={Link}
+                    href="/webcamtester"
+                  >
+                    Let's Start
+                  </Button>
                 </div>
               </div>
             )}
