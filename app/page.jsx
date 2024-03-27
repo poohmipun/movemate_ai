@@ -1,10 +1,10 @@
 import Footer from "@components/Footer";
-import Navbar from "@components/Navbar";
+import Nav from "@components/Navbar";
 
 const Home = () => {
   return (
-    <section className="w-full h-full flex-center flex-col">
-      <Navbar />
+    <section className="w-full h-full flex-center flex-col sm:px-16 px-6">
+      <Nav />
       <div className="w-full h-96 rounded-lg flex-center flex-col bg-[url('/images/slogan_bg.png')] bg-cover p-10 shadow-2xl shadow-gray-600/50">
         <h1 className="head_text text-center text-white">
           Your virtual fitness companion<br></br>always by your side

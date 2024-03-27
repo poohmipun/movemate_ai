@@ -1,3 +1,4 @@
+"use client";
 import React, { useState, useEffect, useMemo } from "react";
 import * as poseDetection from "@tensorflow-models/pose-detection";
 import * as tf from "@tensorflow/tfjs-core";
@@ -13,8 +14,7 @@ const Webcam = ({
   containerWidth,
   containerHeight,
 }) => {
-  const [keypoints, setKeypoints] = useState([]);
-  const [Numkeypoint, setNumkeypoint] = useState(0);
+  const [keypoints, setKeypoints] = useState(0);
   const [videoStream, setVideoStream] = useState(null);
   const [detector, setDetector] = useState(null);
   const [loading, setLoading] = useState({
@@ -114,39 +114,37 @@ const Webcam = ({
     };
 
     init();
+    return () => {
+      // Cleanup function
+      if (videoStream) {
+        videoStream.getTracks().forEach((track) => {
+          track.stop();
+        });
+      }
+    };
   }, []);
 
+  /* send keypoint */
   useEffect(() => {
     const interval = setInterval(() => {
-      // Calculate the number of keypoints
-      const numKeypoints = keypoints.filter(
-        (keypoint) => keypoint.score > 0.3
-      ).length;
-      // Update the state with the new value
-      setNumkeypoint(numKeypoints);
-      // Trigger the callback with the new value
-      onKeypointsCountChange(numKeypoints);
-    }, 100);
-
+      onKeypointsCountChange(keypoints);
+    }, 300);
     return () => {
       clearInterval(interval);
     };
   }, [keypoints, onKeypointsCountChange]);
 
   const sketch = useMemo(() => {
-    const drawKeypoints = (predictions, video, p5) => {
-      const filteredKeypoints = predictions[0].keypoints.filter(
-        (keypoint) => keypoint.score > 0.3
-      );
-
+    const drawKeypoints = (filteredKeypoints, video, p5) => {
       filteredKeypoints.forEach(({ x, y, score }) => {
         p5.fill(255);
         p5.noStroke();
         const canvasX = (x / video.elt.videoWidth) * p5.width;
         const canvasY = (y / video.elt.videoHeight) * p5.height;
-        p5.ellipse(canvasX, canvasY, 5, 5);
+        p5.ellipse(canvasX, canvasY, 8, 8);
       });
     };
+
     const drawSkeleton = (predictions, video, p5) => {
       if (predictions && predictions.length > 0) {
         const confidence_threshold = 0.5;
@@ -203,9 +201,9 @@ const Webcam = ({
           const filteredKeypoints = predictions[0].keypoints.filter(
             (keypoint) => keypoint.score > 0.3
           );
-          setKeypoints(predictions[0].keypoints);
-          drawKeypoints(predictions, video, p5);
+          drawKeypoints(filteredKeypoints, video, p5);
           drawSkeleton(predictions, video, p5);
+          setKeypoints(filteredKeypoints.length);
         }
       };
     };

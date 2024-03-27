@@ -5,14 +5,14 @@ import Image from "next/image";
 import { Button, Modal } from "flowbite-react";
 import { Label, Textarea, Select, Alert, Table } from "flowbite-react";
 
-const page = () => {
+const Programs = () => {
   const [openModal, setOpenModal] = useState(false);
   const [modalSize, setModalSize] = useState("7xl");
   return (
-    <section className="w-full h-full flex-row mb-5">
+    <section className="w-full h-full flex-row mb-5 sm:px-16 px-6">
       <div className="w-full h-full flex flex-col">
         <p className="head_text text-left mb-12">Choose your Programs</p>
-        <div className="cards max-w-full max-h-96 mb-12 grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8 flex-wrap overflow-auto ">
+        <div className="cards max-w-full max-h-96 mb-6 grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-8 flex-wrap overflow-auto ">
           <button
             onClick={() => setOpenModal(true)}
             className="card max-w-64 h-96  border rounded-lg shadow bg-gray-200 border-gray-600 flex flex-col items-center "
@@ -207,7 +207,7 @@ const page = () => {
         </div>
 
         {/* summarize */}
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto mb-6">
           <Table>
             <Table.Head>
               <Table.HeadCell>Product name</Table.HeadCell>
@@ -271,13 +271,17 @@ const page = () => {
           </Table>
         </div>
         <div className="footer w-full flex flex-row-reverse">
-          <Link href="/" className="orange_btn ">
+          <Button
+            className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-red-800 border-none"
+            as={Link}
+            href="/programs/exercises" 
+          >
             Start
-          </Link>
+          </Button>
         </div>
       </div>
     </section>
   );
 };
 
-export default page;
+export default Programs;
