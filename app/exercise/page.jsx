@@ -9,8 +9,8 @@ const Exercise = () => {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
   const [openWebcam, setOpenWebcam] = useState(false);
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
-  const [showWarningAlert, setShowWarningAlert] = useState(true);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(true);
+  const [showWarningAlert, setShowWarningAlert] = useState(false);
   const [numKeypoints, setNumKeypoints] = useState(0);
   const [buttonClicked, setButtonClicked] = useState(false);
   const [keypointsCount, setKeypointsCount] = useState(0);
@@ -146,11 +146,11 @@ const Exercise = () => {
             )}
           </div>
           <div className="flex mt-6 justify-between">
-            <Link href="/programe" className="orange_btn ">
+            <Link href="/" className="orange_btn ">
               Go back
             </Link>
             <Link
-              href="/"
+              href="exercise/programs"
               disabled={!showSuccessAlert}
               className={`orange_btn ${
                 !showSuccessAlert ? "opacity-50 cursor-not-allowed" : ""

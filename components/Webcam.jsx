@@ -133,7 +133,6 @@ const Webcam = ({
     };
   }, [keypoints, onKeypointsCountChange]);
 
-  
   const sketch = useMemo(() => {
     const drawKeypoints = (predictions, video, p5) => {
       const filteredKeypoints = predictions[0].keypoints.filter(
