@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import Webcam from "@components/Webcam";
+import Webcam from "../components/Webcam";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "flowbite-react";
@@ -85,12 +85,12 @@ const WebcamTester = () => {
               </div>
             </div>
           )}
-          <div className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-orange-500 rounded-md overflow-hidden">
+          <div className="w-full h-4/5 flex justify-center bg-black border-dashed border-2 border-blue-500 rounded-md overflow-hidden">
             <Webcam onKeypointsCountChange={handleSendKeypointsCount} />
           </div>
           <div className="flex mt-6 justify-between">
             <Button
-              className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-red-800 border-none"
+              className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-blue-800 border-none"
               as={Link}
               href="/"
             >
@@ -100,7 +100,7 @@ const WebcamTester = () => {
               <Button
                 as={Link}
                 href="/programs"
-                className="orange_btn focus:outline-none focus:ring focus:ring-red-800 border-none"
+                className="orange_btn focus:outline-none focus:ring focus:ring-blue-800 border-none"
               >
                 Choose Programs
               </Button>

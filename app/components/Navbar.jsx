@@ -10,12 +10,12 @@ const Navbar = () => {
     <>
       <nav className="flex-between w-full mb-10 pt-12 pb-4 sticky">
         <Link href="/" className="flex gap-2 flex-center logo_text">
-          🔥MoveMate AI
+        🏋️‍♂️MoveMate AI
         </Link>
         <div className="sm:flex hidden">
           <div className="flex gap-3 md:gap-5">
             <Button
-              className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-red-800 border-none"
+              className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-blue-800 border-none"
               as={Link}
               href="/webcamtester"
             >
@@ -37,7 +37,7 @@ const Navbar = () => {
               <div className="dropdown">
                 <div className="flex gap-3 md:gap-5">
                   <Button
-                    className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-red-800 border-none"
+                    className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-blue-800 border-none"
                     as={Link}
                     href="/webcamtester"
                   >

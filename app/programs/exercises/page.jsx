@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import Webcam from "@app/components/Webcam";
+import Webcam from "../../components/Webcam";
 import Image from "next/image";
 
 const ExerciseManager = () => {

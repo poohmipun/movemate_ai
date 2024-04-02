@@ -240,7 +240,7 @@ const Webcam = ({ onKeypointsCountChange }) => {
       >
         <svg
           className={`w-12 h-12 ${
-            openWebcam ? "text-orange-600" : "text-white"
+            openWebcam ? "text-blue-600" : "text-white"
           }`}
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
@@ -266,9 +266,9 @@ const Webcam = ({ onKeypointsCountChange }) => {
           <div
             className={`relative w-11 h-6 bg-${
               openWebcam
-                ? "bg-gradient-to-r from-amber-500 to-orange-600"
+                ? "bg-gradient-to-r from-blue-500 to-cyan-600"
                 : "white"
-            } peer-focus:outline-none peer-focus:ring-3 peer-focus:ring-red-200 dark:peer-focus:ring-red-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-gradient-to-r from-amber-500 to-orange-600`}
+            } peer-focus:outline-none peer-focus:ring-3 peer-focus:ring-blue-200 dark:peer-focus:ring-cyan-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-gradient-to-r from-blue-500 to-cyan-600`}
           ></div>
         </div>
       </label>
@@ -280,14 +280,14 @@ const Webcam = ({ onKeypointsCountChange }) => {
           <>
             {loading.step1 || loading.step2 ? (
               <div className="flex items-center justify-center ">
-                <ul>
+                <ul className="text-[14px] sm:text-3xl">
                   <li className="flex items-center">
                     <div role="status">
                       {loading.step1 ? (
                         <div role="status">
                           <svg
                             aria-hidden="true"
-                            className="w-6 h-6 me-2 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600"
+                            className="w-6 h-6 me-2 text-gray-200 animate-spin fill-blue-600"
                             viewBox="0 0 100 101"
                             fill="none"
                             xmlns="http://www.w3.org/2000/svg"

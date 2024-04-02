@@ -10,7 +10,7 @@ const Footer = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <div className="flex-center text-black font-bold hover:bg-orange-500 bg-white pt-2 pb-2 pr-4 pl-4 rounded-full gap-3">
+          <div className="flex-center text-black font-bold hover:bg-blue-500 bg-white pt-2 pb-2 pr-4 pl-4 rounded-full gap-3">
             <Image src="/images/notion.svg" width={37} height={37} alt="code" />
             <p className="sm:flex hidden">Documentation</p>
           </div>
@@ -20,7 +20,7 @@ const Footer = () => {
           target="_blank"
           rel="noopener noreferrer"
         >
-          <div className="flex-center text-black font-bold hover:bg-orange-500 bg-white pt-2 pb-2 pr-4 pl-4 rounded-full gap-3">
+          <div className="flex-center text-black font-bold hover:bg-blue-500 bg-white pt-2 pb-2 pr-4 pl-4 rounded-full gap-3">
             <Image src="/images/github.svg" width={37} height={37} alt="code" />
             <p className="sm:flex hidden">Code</p>
           </div>

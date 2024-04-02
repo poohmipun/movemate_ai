@@ -21,7 +21,7 @@ video {
   justify-content: center;
   padding: 120px 24px 160px 24px;
   pointer-events: none;
-  background-color: black;
+  background: linear-gradient(to top right, #000000, #060233);
   color: white;
 }
 
@@ -95,7 +95,7 @@ video {
 }
 
 .orange_btn {
-  @apply rounded-full border bg-gradient-to-bl from-orange-600 to-red-500  focus:outline-none focus:ring focus:ring-red-300 border-none py-2 px-2 text-xs  text-white transition-all hover:bg-white hover:text-yellow-900 text-center font-bold flex items-center justify-center sm:px-3 py-0 text-sm;
+  @apply rounded-full border bg-gradient-to-bl from-blue-600 to-cyan-500  focus:outline-none focus:ring focus:ring-cyan-300 border-none py-2 px-2 text-xs  text-white transition-all hover:bg-white hover:text-blue-900 text-center font-bold flex items-center justify-center sm:px-3 py-0 text-sm;
 }
 
 .outline_btn {
