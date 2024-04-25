@@ -22,7 +22,7 @@ const Footer = () => {
         >
           <div className="flex-center text-black font-bold hover:bg-blue-500 bg-white pt-2 pb-2 pr-4 pl-4 rounded-full gap-3">
             <Image src="/images/github.svg" width={37} height={37} alt="code" />
-            <p className="sm:flex hidden">Code</p>
+            <p className="sm:flex hidden">Github</p>
           </div>
         </Link>
       </div>

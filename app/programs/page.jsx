@@ -22,7 +22,7 @@ const Programs = () => {
         if (res.ok) {
           const data = await res.json();
           setPrograms(data.data);
-          console.log(data.data); 
+          console.log(data.data);
         } else {
           console.error("Failed to fetch programs:", res.status);
         }
@@ -46,7 +46,7 @@ const Programs = () => {
           >
             <div className="flex flex-col items-center justify-center h-full w-full space-y-6">
               <svg
-                class="w-20 h-20 text-white "
+                className="w-20 h-20 text-white "
                 aria-hidden="true"
                 xmlns="http://www.w3.org/2000/svg"
                 width="24"

@@ -18,8 +18,10 @@ import {
 } from "flowbite-react";
 import { FaMapMarkerAlt, FaChevronRight, FaChevronLeft } from "react-icons/fa";
 import { FaGreaterThanEqual, FaLessThanEqual } from "react-icons/fa6";
-import { CldUploadButton, CldImage } from "next-cloudinary";
 import { FiRotateCw } from "react-icons/fi";
+
+import InformationForm from "./Form/InformationForm";
+import StartPositionForm from "./Form/StartPositionForm";
 
 const ModalForm = ({ openModal, onCloseModal }) => {
   //set up modal
@@ -30,69 +32,114 @@ const ModalForm = ({ openModal, onCloseModal }) => {
   // pages management
   const [currentPage, setCurrentPage] = useState(0);
   const pageNames = ["Infomations", "Up position", "Down position", "Summary"];
-  const [infoFormData, setInfoFormData] = useState({
-    /* Initial state for page 1 */
-  });
-  const [upPositionFormData, setUpPositionFormData] = useState({
-    /* Initial state for page 2 */
-  });
-  const [downPositionFormData, setDownPositionFormData] = useState({
-    /* Initial state for page 3 */
-  });
-  const [summaryFormData, setSummaryFormData] = useState({
-    /* Initial state for page 4 */
-  });
   const [showToast, setShowToast] = useState(false);
   // form management
-  const [selectedOption, setSelectedOption] = useState(null);
-  const [rotationToasts, setRotationToasts] = useState([]);
-  const [positionToasts, setPositionToasts] = useState([]);
+  /* ------------------------------------------- start Info ------------------------------------------------- */
+  const [page1FormData, setPage1FormData] = useState({
+    title: "",
+    description: "",
+    imageUrl: imageUrl,
+  });
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
+  const handlePage1Change = (event) => {
+    const { name, value } = event.target;
+    setPage1FormData((prevData) => ({
+      ...prevData,
       [name]: value,
     }));
   };
-  const handleAddToast = (condition) => {
-    const newToast = {
-      condition,
-      formData: {},
-      order: rotationToasts.length + positionToasts.length,
-    };
-    if (condition === "Keypoint Rotation") {
-      setRotationToasts([...rotationToasts, newToast]);
-    } else if (condition === "Keypoint Position") {
-      setPositionToasts([...positionToasts, newToast]);
-    }
+
+  const handleImageUploadSuccess = (result) => {
+    setPage1FormData({
+      ...page1FormData,
+      imageUrl: result.info.public_id, // Update the imageUrl field in the state
+    });
   };
-  const handleCloseToast = (index, toastType) => {
-    if (toastType === "rotation") {
-      const updatedToasts = [...rotationToasts];
+
+  /* ------------------------------------------- end Info ------------------------------------------------- */
+
+  /* ------------------------------------------- Start Postion ------------------------------------------------- */
+  const [page2FormData, setPage2FormData] = useState({
+    allToasts: [],
+  });
+
+  const handleAddToast = (condition) => {
+    setPage2FormData((prevState) => {
+      console.log("PrevState:", prevState); // Debugging
+
+      let newToast;
+      if (condition === "Keypoint Rotation") {
+        const newIndex = prevState.allToasts.length; // Generate unique index
+        newToast = {
+          condition,
+          index: newIndex,
+          formData: {
+            radius1: "",
+            radius2: "",
+            selectedKeypoint: "",
+          },
+          order: newIndex,
+        };
+      } else if (condition === "Keypoint Position") {
+        const newIndex = prevState.allToasts.length; // Generate unique index
+        newToast = {
+          condition,
+          index: newIndex,
+          formData: {
+            lowerKeypoint: "",
+            upperKeypoint: "",
+          },
+          order: newIndex,
+        };
+      }
+
+      // Create a new array by concatenating the existing allToasts array with the new toast
+      const updatedToasts = [...prevState.allToasts, newToast];
+      // Return a new state object with the updated allToasts array
+      return {
+        ...prevState,
+        allToasts: updatedToasts,
+      };
+    });
+  };
+
+  const handleCloseToast = (index) => {
+    setPage2FormData((prevState) => {
+      const updatedToasts = [...prevState.allToasts];
       updatedToasts.splice(index, 1);
-      setRotationToasts(updatedToasts);
-    } else if (toastType === "position") {
-      const updatedToasts = [...positionToasts];
-      updatedToasts.splice(index, 1);
-      setPositionToasts(updatedToasts);
-    }
+      console.log("Updated State (All Toasts):", updatedToasts);
+      return {
+        ...prevState,
+        allToasts: updatedToasts,
+      };
+    });
   };
 
   const handleInputChange = (index, field, value, toastType) => {
-    if (toastType === "rotation") {
-      const updatedToasts = [...rotationToasts];
-      updatedToasts[index].formData[field] = value;
-      setRotationToasts(updatedToasts);
-    } else if (toastType === "position") {
-      const updatedToasts = [...positionToasts];
-      updatedToasts[index].formData[field] = value;
-      setPositionToasts(updatedToasts);
-    }
+    setPage2FormData((prevState) => {
+      return {
+        ...prevState,
+        allToasts: prevState.allToasts.map((toast, toastIndex) => {
+          if (toastIndex === index) {
+            return {
+              ...toast,
+              formData: {
+                ...toast.formData,
+                [field]: value,
+              },
+            };
+          }
+          return toast;
+        }),
+      };
+    });
   };
 
   const renderToasts = () => {
-    const allToasts = [...rotationToasts, ...positionToasts];
+    // Retrieve all toasts from page2FormData
+    const allToasts = page2FormData.allToasts;
+
+    // Sort allToasts by order
     const sortedToasts = allToasts.sort((a, b) => a.order - b.order);
 
     return sortedToasts.map((toast, index) => {
@@ -102,7 +149,9 @@ const ModalForm = ({ openModal, onCloseModal }) => {
             key={`rotation-${index}`}
             index={index}
             formData={toast.formData}
-            handleChange={handleChange}
+            handleChange={(index, field, value) =>
+              handleInputChange(index, field, value, "rotation")
+            }
             onClose={() => handleCloseToast(index, "rotation")}
           />
         );
@@ -112,7 +161,9 @@ const ModalForm = ({ openModal, onCloseModal }) => {
             key={`position-${index}`}
             index={index}
             formData={toast.formData}
-            handleChange={handleChange}
+            handleChange={(field, value) =>
+              handleInputChange(index, field, value, "position")
+            }
             onClose={() => handleCloseToast(index, "position")}
           />
         );
@@ -120,9 +171,130 @@ const ModalForm = ({ openModal, onCloseModal }) => {
     });
   };
 
-  const handleUploadSuccess = (result) => {
-    setImageUrl(result.info.public_id);
+  const FormForRotation = ({ index, formData, handleChange, onClose }) => {
+    return (
+      <Toast className="flex mt-6 min-w-full">
+        <div className="flex items-start min-w-full">
+          <div className="ml-3 text-sm font-normal w-full">
+            <div className="mb-4 text-xl font-bold text-blue-900 ">
+              Keypoint Rotation
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <div className="max-w-fit">
+                <TextInput
+                  id={`radius1-${index}-1`}
+                  name="radius1"
+                  placeholder="input Radiant"
+                  type="text"
+                  onChange={(e) => {
+                    console.log("Radius 1 changed:", e.target.value);
+                    handleChange(index, "radius1", e.target.value, "rotation");
+                  }}
+                  required={true}
+                  value={formData.radius1}
+                  sizing="md"
+                />
+              </div>
+              <div>
+                <FaLessThanEqual />
+              </div>
+              <div>
+                <Select
+                  id={`select-${index}`}
+                  size="md"
+                  className="space-y-2"
+                  onChange={(e) => {
+                    console.log("Selected Keypoint changed:", e.target.value);
+                    handleChange(
+                      index,
+                      "selectedKeypoint",
+                      e.target.value,
+                      "rotation"
+                    );
+                  }}
+                >
+                  <option>Select Keypoint</option>
+                  <option value="Elbow">Elbow</option>
+                  <option value="Shoulder">Shoulder</option>
+                  <option value="Hip">Hip</option>
+                  <option value="Ankle">Ankle</option>
+                </Select>
+              </div>
+              <div>
+                <FaLessThanEqual />
+              </div>
+              <div className="max-w-fit">
+                <TextInput
+                  id={`radius2-${index}-2`}
+                  name="radius2"
+                  placeholder="input Radiant"
+                  type="text"
+                  onChange={(e) => {
+                    console.log("Radius 2 changed:", e.target.value);
+                    handleChange(index, "radius2", e.target.value, "rotation");
+                  }}
+                  required={true}
+                  value={formData.radius2}
+                  sizing="md"
+                />
+              </div>
+            </div>
+          </div>
+          <Toast.Toggle onClick={onClose} />
+        </div>
+      </Toast>
+    );
   };
+
+  const FormForPosition = ({ index, formData, handleChange, onClose }) => {
+    return (
+      <Toast className="flex mt-6 min-w-full">
+        <div className="flex items-start min-w-full">
+          <div className="ml-3 text-sm font-normal w-full">
+            <div className="mb-4 text-xl font-bold text-blue-900 ">
+              Keypoint Position
+            </div>
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                <Select id="Select Keypoints" size="md" className="space-y-2">
+                  <option>Select Keypoint</option>
+                  <option value="Nose">Nose</option>
+                  <option value="Eye">Eye</option>
+                  <option value="Ear">Ear</option>
+                  <option value="Shoulder">Shoulder</option>
+                  <option value="Elbow">Elbow</option>
+                  <option value="Wrist">Wrist</option>
+                  <option value="Hip">Hip</option>
+                  <option value="Knee">Knee</option>
+                  <option value="Ankle">Ankle</option>
+                </Select>
+              </div>
+              <div>
+                <FaChevronLeft />
+              </div>
+              <div>
+                <Select id="Select Keypoints" size="md" className="space-y-2">
+                  <option>Select Keypoint</option>
+                  <option value="Nose">Nose</option>
+                  <option value="Eye">Eye</option>
+                  <option value="Ear">Ear</option>
+                  <option value="Shoulder">Shoulder</option>
+                  <option value="Elbow">Elbow</option>
+                  <option value="Wrist">Wrist</option>
+                  <option value="Hip">Hip</option>
+                  <option value="Knee">Knee</option>
+                  <option value="Ankle">Ankle</option>
+                </Select>
+              </div>
+            </div>
+          </div>
+          <Toast.Toggle onClick={onClose} />
+        </div>
+      </Toast>
+    );
+  };
+
+  /* ------------------------------------------- Start Postion End ------------------------------------------------- */
 
   const handleNextPage = () => {
     setCurrentPage((prevPage) => {
@@ -143,14 +315,6 @@ const ModalForm = ({ openModal, onCloseModal }) => {
       }
     });
   };
-
-  const [formData, setFormData] = useState({
-    img_url: "",
-    title: "",
-    description: "",
-    joint_rotation_1: "",
-    joint_rotation_2: "",
-  });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -202,109 +366,6 @@ const ModalForm = ({ openModal, onCloseModal }) => {
     setSummaryFormData({ ...summaryFormData, [e.target.name]: e.target.value });
   };
 
-  const FormForRotation = ({ index, formData, handleChange, onClose }) => {
-    return (
-      <Toast className="flex mt-6 min-w-full">
-        <div className="flex items-start min-w-full">
-          <div className="ml-3 text-sm font-normal w-full">
-            <div className="mb-4 text-xl font-bold text-blue-900 ">
-              Keypoint Rotation
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <div className="max-w-fit">
-                <TextInput
-                  id="title"
-                  name="title"
-                  placeholder="input Radiant"
-                  type="text"
-                  onChange={handleChange}
-                  required={true}
-                  value={formData.title}
-                  sizing="md"
-                />
-              </div>
-              <div>
-                <FaLessThanEqual />
-              </div>
-              <div>
-                <Select id="Select Keypoints" size="md" className="space-y-2">
-                  <option>Select Keypoint</option>
-                  <option>Elbow</option>
-                  <option>Shoulder</option>
-                  <option>Hip</option>
-                  <option>Ankle</option>
-                </Select>
-              </div>
-              <div>
-                <FaLessThanEqual />
-              </div>
-              <div className="max-w-fit">
-                <TextInput
-                  id="title"
-                  name="title"
-                  placeholder="input Radiant"
-                  type="text"
-                  onChange={handleChange}
-                  required={true}
-                  value={formData.title}
-                  sizing="md"
-                />
-              </div>
-            </div>
-          </div>
-          <Toast.Toggle onClick={onClose} />
-        </div>
-      </Toast>
-    );
-  };
-  const FormForPosition = ({ index, formData, handleChange, onClose }) => {
-    return (
-      <Toast className="flex mt-6 min-w-full">
-        <div className="flex items-start min-w-full">
-          <div className="ml-3 text-sm font-normal w-full">
-            <div className="mb-4 text-xl font-bold text-blue-900 ">
-              Keypoint Position
-            </div>
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <Select id="Select Keypoints" size="md" className="space-y-2">
-                  <option>Select Keypoint</option>
-                  <option>Nose</option>
-                  <option>Eye</option>
-                  <option>Ear</option>
-                  <option>Shoulder</option>
-                  <option>Elbow</option>
-                  <option>Wrist</option>
-                  <option>Hip</option>
-                  <option>Knee</option>
-                  <option>Ankle</option>
-                </Select>
-              </div>
-              <div>
-                <FaChevronLeft />
-              </div>
-              <div>
-                <Select id="Select Keypoints" size="md" className="space-y-2">
-                  <option>Select Keypoint</option>
-                  <option>Nose</option>
-                  <option>Eye</option>
-                  <option>Ear</option>
-                  <option>Shoulder</option>
-                  <option>Elbow</option>
-                  <option>Wrist</option>
-                  <option>Hip</option>
-                  <option>Knee</option>
-                  <option>Ankle</option>
-                </Select>
-              </div>
-            </div>
-          </div>
-          <Toast.Toggle onClick={onClose} />
-        </div>
-      </Toast>
-    );
-  };
-
   return (
     <div className="flex w-full h-full">
       <Modal show={openModal} size={modalSize} onClose={onCloseModal}>
@@ -319,136 +380,28 @@ const ModalForm = ({ openModal, onCloseModal }) => {
             </div>
           </Modal.Header>
           <Modal.Body>
-            <div className="modal-container flex flex-col xl:space-x-8 xl:flex-row max-h-screen overflow-y-auto ">
-              <div className="left-side flex-col items-center flex-1 justify-center max-h-screen overflow-y-auto ">
-                <div className="flex flex-col w-full items-center justify-center mb-4 space-y-4  max-h-[800px] overflow-auto">
-                  <h3 className="text-xl font-medium text-white text-left w-full">
-                    {currentPage === 0
-                      ? "Image Preview"
-                      : pageNames[currentPage]}
-                  </h3>
-                  <div>
-                    {currentPage > 0 ? (
-                      <>
-                        <iframe
-                          className="w-[700px] h-[400px] rounded-md"
-                          src="https://www.youtube.com/embed/CN_RsGkRScM?autoplay=1&mute=1&loop=1"
-                          title="YouTube video player"
-                          frameBorder="0"
-                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                          allowFullScreen
-                          loop
-                        ></iframe>
-                      </>
-                    ) : (
-                      <div
-                        role="status"
-                        className="flex items-center w-[700px] justify-center h-56 bg-gray-300 rounded-lg overflow-hidden"
-                      >
-                        {imageUrl ? (
-                          <CldImage
-                            src={imageUrl}
-                            width="1200"
-                            height="1200"
-                            alt="Uploaded"
-                          />
-                        ) : (
-                          <svg
-                            className="w-36 h-36 text-gray-600"
-                            aria-hidden="true"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="currentColor"
-                            viewBox="0 0 20 18"
-                          >
-                            <path d="M18 0H2a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2Zm-5.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4.376 10.481A1 1 0 0 1 16 15H4a1 1 0 0 1-.895-1.447l3.5-7A1 1 0 0 1 7.468 6a.965.965 0 0 1 .9.5l2.775 4.757 1.546-1.887a1 1 0 0 1 1.618.1l2.541 4a1 1 0 0 1 .028 1.011Z" />
-                          </svg>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                  {currentPage > 0 ? (
-                    <></>
-                  ) : (
-                    <>
-                      {" "}
-                      <CldUploadButton
-                        uploadPreset="nh1i8otq"
-                        onSuccess={handleUploadSuccess}
-                        className="orange_btn w-full h-12"
-                        onUploadAdded={(result) => {
-                          console.log(result);
-                          setImageUrl(result.info.public_id);
-                          console.log(
-                            "Uploaded image URL:",
-                            result.info.secure_url
-                          );
-                        }}
-                      />
-                    </>
-                  )}
-                </div>
-              </div>
-              <div className="right-side min-w-1/2 flex-1 grid gap-4 mb-4 ">
-                <div className="col-span-1 w-full overflow-y-auto max-h-[450px] pl-4">
-                  <h3 className="text-xl font-medium text-white mb-2">
-                    Program Form
-                  </h3>
-                  {currentPage > 0 ? (
-                    <div className="flex flex-wrap ">
-                      <Dropdown
-                        label="Add conditions "
-                        size="lg"
-                        className="min-w-full"
-                      >
-                        <Dropdown.Item
-                          icon={FiRotateCw}
-                          onClick={() => handleAddToast("Keypoint Rotation")}
-                        >
-                          Select Keypoint Rotation
-                        </Dropdown.Item>
-                        <Dropdown.Item
-                          icon={FaMapMarkerAlt}
-                          onClick={() => handleAddToast("Keypoint Position")}
-                        >
-                          Check Keypoint position
-                        </Dropdown.Item>
-                        <Dropdown.Divider />
-                      </Dropdown>
-                      {renderToasts()}
-                    </div>
-                  ) : (
-                    <>
-                      {/* frist page */}
-                      <div className="space-y-4 mb-4">
-                        <TextInput
-                          id="title"
-                          name="title"
-                          placeholder="title"
-                          type="text"
-                          onChange={handleChange}
-                          required={true}
-                          value={formData.title}
-                          sizing="md"
-                        />
-                        <Textarea
-                          id="Description"
-                          name="description"
-                          placeholder="Description"
-                          type="text"
-                          onChange={handleChange}
-                          required={true}
-                          value={formData.description}
-                          rows={11}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
+            {currentPage === 0 && (
+              <InformationForm
+                handleImageUploadSuccess={handleImageUploadSuccess}
+                imageUrl={imageUrl}
+                handlePage1Change={handlePage1Change}
+                setPage1FormData={setPage1FormData}
+                page1FormData={page1FormData}
+              />
+            )}
+            {currentPage === 1 && (
+              <StartPositionForm
+                page2FormData={page2FormData}
+                setPage2FormData={setPage2FormData}
+                handleAddToast={handleAddToast}
+                handleCloseToast={handleCloseToast}
+                handleInputChange={handleInputChange}
+                renderToasts={renderToasts}
+              />
+            )}
           </Modal.Body>
           <Modal.Footer>
-            <div className="w-full flex flex-row items-center justify-between">
+            <div className="w-full flex flex-row items-center sm:justify-between justify-center">
               {currentPage > 0 && (
                 <Button
                   onClick={handlePreviousPage}
@@ -459,15 +412,16 @@ const ModalForm = ({ openModal, onCloseModal }) => {
                   {pageNames[currentPage - 1]}
                 </Button>
               )}
-              <Breadcrumb
-                aria-label="Default breadcrumb example"
-                className="text-white"
-              >
-                {pageNames.map((pageName, index) => (
-                  <Breadcrumb.Item key={index}>{pageName}</Breadcrumb.Item>
-                ))}
-              </Breadcrumb>
-
+              <div className="hidden sm:flex">
+                <Breadcrumb
+                  aria-label="Default breadcrumb example"
+                  className="text-white"
+                >
+                  {pageNames.map((pageName, index) => (
+                    <Breadcrumb.Item key={index}>{pageName}</Breadcrumb.Item>
+                  ))}
+                </Breadcrumb>
+              </div>
               {currentPage < pageNames.length && (
                 <Button
                   onClick={handleNextPage}
