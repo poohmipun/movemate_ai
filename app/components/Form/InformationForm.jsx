@@ -4,16 +4,11 @@ import { TextInput, Textarea, Breadcrumb, Button } from "flowbite-react";
 import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa";
 
-const InformationForm = ({
-  formData,
-  onNextPage,
-  updateFormData,
-  pageNames,
-}) => {
+const InformationForm = ({ informationFormData, onNextPage, pageNames }) => {
   const [localData, setLocalData] = useState({
-    title: formData.title || "",
-    description: formData.description || "",
-    imageUrl: formData.imageUrl || "",
+    title: informationFormData.title || "",
+    description: informationFormData.description || "",
+    imageUrl: informationFormData.imageUrl || "",
   });
 
   const handleInputChange = (event) => {
@@ -33,13 +28,16 @@ const InformationForm = ({
   };
 
   const handleNextPage = () => {
-    /* if (!localData.title || !localData.description || !localData.imageUrl) {
+    if (!localData.title || !localData.description || !localData.imageUrl) {
       alert("Please complete all fields before proceeding.");
       return;
-    } else { */
-    updateFormData(localData);
-    onNextPage();
-    /*  } */
+    } else {
+      onNextPage({
+        title: localData.title,
+        description: localData.description,
+        imageUrl: localData.imageUrl,
+      });
+    }
   };
 
   console.log("formData from Info", localData);
@@ -55,14 +53,14 @@ const InformationForm = ({
             <div>
               <div
                 role="status"
-                className="flex items-center w-[700px] justify-center h-56 bg-gray-300 rounded-lg overflow-hidden"
+                className="flex items-center w-[600px] justify-center h-56 bg-gray-300 rounded-lg overflow-hidden"
               >
                 {localData.imageUrl ? (
                   <div className="relative w-full h-auto max-h-500px">
                     <Image
                       src={localData.imageUrl}
                       alt="Uploaded Image"
-                      width={2000}
+                      width={1500}
                       height={500}
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />

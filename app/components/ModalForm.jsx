@@ -14,26 +14,22 @@ const ModalForm = ({ openModal, onCloseModal }) => {
     title: "",
     description: "",
     imageUrl: "",
-    allToasts: [],
+    start_condition: [],
   });
 
-  const updateFormData = (newData) => {
-    console.log("Updating formData in ModalForm:", newData); // Log the updated formData
-    setFormData(newData);
+  const handleNextPage = (newFormData) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      ...newFormData, // Merge the newFormData with existing formData
+    }));
+    setCurrentPage((prevPage) => prevPage + 1);
   };
 
-  const handleNextPage = () => {
-    setCurrentPage(currentPage + 1);
-  };
-
-  const handlePreviousPage = () => {
+  const handlePreviousPage = (newData) => {
     if (currentPage > 0) {
-      setCurrentPage(currentPage - 1);
+      setFormData(newData);
+      setCurrentPage((prevPage) => prevPage - 1);
     }
-  };
-
-  const handleMoveToNextPage = () => {
-    handleNextPage(); // Move to the next page
   };
 
   console.log("formData from modal", formData);
@@ -43,17 +39,19 @@ const ModalForm = ({ openModal, onCloseModal }) => {
       case 0:
         return (
           <InformationForm
-            formData={formData}
-            onNextPage={handleNextPage} // Pass onNextPage function as a prop
-            updateFormData={updateFormData}
+            formData={{
+              title: formData.title,
+              description: formData.description,
+              imageUrl: formData.imageUrl,
+            }}
+            onNextPage={handleNextPage}
             pageNames={pageNames}
           />
         );
       case 1:
         return (
           <StartPositionForm
-            formData={formData}
-            setFormData={updateFormData}
+            formData={{ start_condition: formData.start_condition }}
             onNextPage={handleNextPage}
             onPreviousPage={handlePreviousPage}
             currentPage={currentPage}
