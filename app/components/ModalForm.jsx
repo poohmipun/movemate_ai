@@ -14,6 +14,7 @@ const ModalForm = ({ openModal, onCloseModal }) => {
     title: "",
     description: "",
     imageUrl: "",
+    allToasts: [],
   });
 
   const updateFormData = (newData) => {
@@ -45,6 +46,7 @@ const ModalForm = ({ openModal, onCloseModal }) => {
             formData={formData}
             onNextPage={handleNextPage} // Pass onNextPage function as a prop
             updateFormData={updateFormData}
+            pageNames={pageNames}
           />
         );
       case 1:
@@ -53,6 +55,9 @@ const ModalForm = ({ openModal, onCloseModal }) => {
             formData={formData}
             setFormData={updateFormData}
             onNextPage={handleNextPage}
+            onPreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            pageNames={pageNames}
           />
         );
       case 2:

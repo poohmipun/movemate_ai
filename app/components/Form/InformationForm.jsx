@@ -4,14 +4,12 @@ import { TextInput, Textarea, Breadcrumb, Button } from "flowbite-react";
 import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa";
 
-const InformationForm = ({ formData, onNextPage, updateFormData }) => {
-  const pageNames = [
-    "Information",
-    "Start position",
-    "End position",
-    "Summary",
-  ];
-
+const InformationForm = ({
+  formData,
+  onNextPage,
+  updateFormData,
+  pageNames,
+}) => {
   const [localData, setLocalData] = useState({
     title: formData.title || "",
     description: formData.description || "",
@@ -35,13 +33,13 @@ const InformationForm = ({ formData, onNextPage, updateFormData }) => {
   };
 
   const handleNextPage = () => {
-    if (!localData.title || !localData.description || !localData.imageUrl) {
+    /* if (!localData.title || !localData.description || !localData.imageUrl) {
       alert("Please complete all fields before proceeding.");
       return;
-    } else {
-      updateFormData(localData);
-      onNextPage();
-    }
+    } else { */
+    updateFormData(localData);
+    onNextPage();
+    /*  } */
   };
 
   console.log("formData from Info", localData);
@@ -49,9 +47,7 @@ const InformationForm = ({ formData, onNextPage, updateFormData }) => {
   return (
     <div className="grid grid-cols-1 divide-y ">
       <div className="modal-container flex flex-col xl:space-x-8 xl:flex-row max-h-screen overflow-y-auto">
-        {/* Left side */}
         <div className="left-side flex-col items-center flex-1 justify-center max-h-screen overflow-y-auto">
-          {/* Image preview */}
           <div className="flex flex-col w-full items-center justify-center mb-4 space-y-4 max-h-[800px] overflow-auto">
             <h3 className="text-xl font-medium text-white text-left w-full">
               Image Preview
