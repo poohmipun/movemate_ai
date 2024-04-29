@@ -16,7 +16,7 @@ const Footer = () => {
           </div>
         </Link>
         <Link
-          href="https://github.com/poohmipun/push-up"
+          href="https://github.com/poohmipun/movemate_ai"
           target="_blank"
           rel="noopener noreferrer"
         >

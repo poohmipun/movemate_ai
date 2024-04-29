@@ -81,7 +81,7 @@ const Programs = () => {
                 className="card max-w-64 min-h-96 border rounded-lg shadow bg-gray-900 border-blue-300 flex flex-col  "
               >
                 <CldImage
-                  className="rounded-t-lg max-h-36 "
+                  className="rounded-t-lg h-36 "
                   width="3000"
                   height="3000"
                   src={program.img_url}

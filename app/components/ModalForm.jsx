@@ -15,19 +15,61 @@ const ModalForm = ({ openModal, onCloseModal }) => {
     description: "",
     imageUrl: "",
     start_condition: [],
+    down_condition: [],
   });
 
   const handleNextPage = (newFormData) => {
-    setFormData((prevData) => ({
-      ...prevData,
-      ...newFormData, // Merge the newFormData with existing formData
-    }));
+    setFormData((prevData) => {
+      let updatedData = { ...prevData };
+
+      // Check for 'start_condition' updates
+      if (newFormData.hasOwnProperty("start_condition")) {
+        updatedData.start_condition = newFormData.start_condition;
+      }
+
+      // Check for 'down_condition' updates
+      if (newFormData.hasOwnProperty("down_condition")) {
+        updatedData.down_condition = newFormData.down_condition;
+      }
+
+      // If neither, merge all other data
+      if (
+        !newFormData.hasOwnProperty("start_condition") &&
+        !newFormData.hasOwnProperty("down_condition")
+      ) {
+        updatedData = { ...prevData, ...newFormData };
+      }
+
+      return updatedData;
+    });
     setCurrentPage((prevPage) => prevPage + 1);
   };
 
   const handlePreviousPage = (newData) => {
     if (currentPage > 0) {
-      setFormData(newData);
+      setFormData((prevData) => {
+        let updatedData = { ...prevData };
+
+        // Check for 'start_condition' updates
+        if (newData.hasOwnProperty("start_condition")) {
+          updatedData.start_condition = newData.start_condition;
+        }
+
+        // Check for 'down_condition' updates
+        if (newData.hasOwnProperty("down_condition")) {
+          updatedData.down_condition = newData.down_condition;
+        }
+
+        // If neither, use the entire newData
+        if (
+          !newData.hasOwnProperty("start_condition") &&
+          !newData.hasOwnProperty("down_condition")
+        ) {
+          updatedData = newData;
+        }
+
+        return updatedData;
+      });
       setCurrentPage((prevPage) => prevPage - 1);
     }
   };
@@ -61,9 +103,11 @@ const ModalForm = ({ openModal, onCloseModal }) => {
       case 2:
         return (
           <DownPositionForm
-            formData={formData}
-            setFormData={updateFormData}
+            formData={{ down_condition: formData.down_condition }}
             onNextPage={handleNextPage}
+            onPreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            pageNames={pageNames}
           />
         );
       case 3:

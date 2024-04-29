@@ -4,11 +4,11 @@ import { TextInput, Textarea, Breadcrumb, Button } from "flowbite-react";
 import Image from "next/image";
 import { FaChevronRight } from "react-icons/fa";
 
-const InformationForm = ({ informationFormData, onNextPage, pageNames }) => {
+const InformationForm = ({ formData, onNextPage, pageNames }) => {
   const [localData, setLocalData] = useState({
-    title: informationFormData.title || "",
-    description: informationFormData.description || "",
-    imageUrl: informationFormData.imageUrl || "",
+    title: formData.title || "",
+    description: formData.description || "",
+    imageUrl: formData.imageUrl || "",
   });
 
   const handleInputChange = (event) => {
@@ -31,16 +31,9 @@ const InformationForm = ({ informationFormData, onNextPage, pageNames }) => {
     if (!localData.title || !localData.description || !localData.imageUrl) {
       alert("Please complete all fields before proceeding.");
       return;
-    } else {
-      onNextPage({
-        title: localData.title,
-        description: localData.description,
-        imageUrl: localData.imageUrl,
-      });
     }
+    onNextPage(localData);
   };
-
-  console.log("formData from Info", localData);
 
   return (
     <div className="grid grid-cols-1 divide-y ">

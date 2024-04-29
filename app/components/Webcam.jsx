@@ -108,6 +108,7 @@ const Webcam = ({ onKeypointsCountChange }) => {
 
   const stopVideoStream = () => {
     const videoStream = videoStreamRef.current;
+
     if (videoStream) {
       videoStream.getTracks().forEach((track) => {
         track.stop();
@@ -239,9 +240,7 @@ const Webcam = ({ onKeypointsCountChange }) => {
         onClick={() => setOpenWebcam((prevState) => !prevState)}
       >
         <svg
-          className={`w-12 h-12 ${
-            openWebcam ? "text-blue-600" : "text-white"
-          }`}
+          className={`w-12 h-12 ${openWebcam ? "text-blue-600" : "text-white"}`}
           aria-hidden="true"
           xmlns="http://www.w3.org/2000/svg"
           fill={openWebcam ? "currentColor" : "white"}
