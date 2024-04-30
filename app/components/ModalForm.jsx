@@ -3,19 +3,24 @@ import { Button, Modal, Breadcrumb } from "flowbite-react";
 
 import InformationForm from "./Form/InformationForm";
 import StartPositionForm from "./Form/StartPositionForm";
-import DownPositionForm from "./Form/DownPositionForm"; // Assuming you create this
+import EndPositionForm from "./Form/EndPositionForm"; // Assuming you create this
 import SummaryPage from "./Form/SummaryPage"; // Assuming you create this
 
 const ModalForm = ({ openModal, onCloseModal }) => {
   const [currentPage, setCurrentPage] = useState(0);
-  const pageNames = ["Information", "Up position", "Down position", "Summary"];
+  const pageNames = [
+    "Information",
+    "Start position",
+    "End position",
+    "Summary",
+  ];
 
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     imageUrl: "",
     start_condition: [],
-    down_condition: [],
+    end_condition: [],
   });
 
   const handleNextPage = (newFormData) => {
@@ -27,15 +32,15 @@ const ModalForm = ({ openModal, onCloseModal }) => {
         updatedData.start_condition = newFormData.start_condition;
       }
 
-      // Check for 'down_condition' updates
-      if (newFormData.hasOwnProperty("down_condition")) {
-        updatedData.down_condition = newFormData.down_condition;
+      // Check for 'end_condition' updates
+      if (newFormData.hasOwnProperty("end_condition")) {
+        updatedData.end_condition = newFormData.end_condition;
       }
 
       // If neither, merge all other data
       if (
         !newFormData.hasOwnProperty("start_condition") &&
-        !newFormData.hasOwnProperty("down_condition")
+        !newFormData.hasOwnProperty("end_condition")
       ) {
         updatedData = { ...prevData, ...newFormData };
       }
@@ -55,15 +60,15 @@ const ModalForm = ({ openModal, onCloseModal }) => {
           updatedData.start_condition = newData.start_condition;
         }
 
-        // Check for 'down_condition' updates
-        if (newData.hasOwnProperty("down_condition")) {
-          updatedData.down_condition = newData.down_condition;
+        // Check for 'end_condition' updates
+        if (newData.hasOwnProperty("end_condition")) {
+          updatedData.end_condition = newData.end_condition;
         }
 
         // If neither, use the entire newData
         if (
           !newData.hasOwnProperty("start_condition") &&
-          !newData.hasOwnProperty("down_condition")
+          !newData.hasOwnProperty("end_condition")
         ) {
           updatedData = newData;
         }
@@ -102,8 +107,8 @@ const ModalForm = ({ openModal, onCloseModal }) => {
         );
       case 2:
         return (
-          <DownPositionForm
-            formData={{ down_condition: formData.down_condition }}
+          <EndPositionForm
+            formData={{ end_condition: formData.end_condition }}
             onNextPage={handleNextPage}
             onPreviousPage={handlePreviousPage}
             currentPage={currentPage}
@@ -111,7 +116,15 @@ const ModalForm = ({ openModal, onCloseModal }) => {
           />
         );
       case 3:
-        return <SummaryPage formData={formData} />;
+        return (
+          <SummaryPage
+            formData={formData}
+            onNextPage={handleNextPage}
+            onPreviousPage={handlePreviousPage}
+            currentPage={currentPage}
+            pageNames={pageNames}
+          />
+        );
       default:
         return <div>Not Found</div>;
     }
@@ -120,7 +133,7 @@ const ModalForm = ({ openModal, onCloseModal }) => {
   return (
     <div className="flex w-full h-full">
       <Modal show={openModal} size="8xl" onClose={onCloseModal}>
-        <form
+        <div
           className="bg-gradient-to-tr from-black to-indigo-800 rounded-md text-white"
           method="post"
           onSubmit={(e) => e.preventDefault()}
@@ -131,7 +144,7 @@ const ModalForm = ({ openModal, onCloseModal }) => {
             </div>
           </Modal.Header>
           <Modal.Body>{renderPage()}</Modal.Body>
-        </form>
+        </div>
       </Modal>
     </div>
   );

@@ -7,15 +7,27 @@ mongoose
 
 mongoose.Promise = global.Promise;
 
-const ProgramSchema = new Schema({
+// Define the schema for dynamic data
+const DynamicSchema = new Schema({
   img_url: String,
   title: String,
   description: String,
-  joint_rotation_1: String,
-  joint_rotation_2: String,
+  start_condition: [
+    {
+      condition: String,
+      formData: Schema.Types.Mixed,
+    },
+  ],
+  end_condition: [
+    {
+      condition: String,
+      formData: Schema.Types.Mixed,
+    },
+  ],
 });
 
-const Program =
-  mongoose.models.Program || mongoose.model("Program", ProgramSchema);
+// Create a model for dynamic data
+const DynamicModel =
+  mongoose.models.DynamicModel || mongoose.model("DynamicModel", DynamicSchema);
 
-export default Program;
+export default DynamicModel;

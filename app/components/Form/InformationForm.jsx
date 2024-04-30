@@ -28,10 +28,10 @@ const InformationForm = ({ formData, onNextPage, pageNames }) => {
   };
 
   const handleNextPage = () => {
-    if (!localData.title || !localData.description || !localData.imageUrl) {
+    /* if (!localData.title || !localData.description || !localData.imageUrl) {
       alert("Please complete all fields before proceeding.");
       return;
-    }
+    } */
     onNextPage(localData);
   };
 
@@ -74,7 +74,7 @@ const InformationForm = ({ formData, onNextPage, pageNames }) => {
             <CldUploadButton
               uploadPreset="nh1i8otq"
               onSuccess={handleImageUploadSuccess}
-              className="orange_btn w-full h-12"
+              className="orange_btn w-full h-10"
               onUploadAdded={(result) => {
                 handleImageUploadSuccess(result);
                 console.log("Uploaded image URL:", result.info.secure_url);

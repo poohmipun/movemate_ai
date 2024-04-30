@@ -16,7 +16,7 @@ import {
 import { FiRotateCw } from "react-icons/fi";
 import { v4 as uuidv4 } from "uuid";
 
-const DownPositionForm = ({
+const EndPositionForm = ({
   formData,
   onNextPage,
   onPreviousPage,
@@ -25,24 +25,24 @@ const DownPositionForm = ({
   pageNames,
 }) => {
   const [localData, setLocalData] = useState({
-    down_condition: formData.down_condition || [],
+    end_condition: formData.end_condition || [],
   });
 
   useEffect(() => {
     setLocalData({
-      down_condition: formData.down_condition || [],
+      end_condition: formData.end_condition || [],
     });
-  }, [formData.down_condition]);
+  }, [formData.end_condition]);
 
   const handleNextPage = () => {
     onNextPage({
-      down_condition: localData.down_condition,
+      end_condition: localData.end_condition,
     });
   };
 
   const handlePreviousPage = () => {
     onPreviousPage({
-      down_condition: localData.down_condition,
+      end_condition: localData.end_condition,
     });
   };
 
@@ -62,31 +62,31 @@ const DownPositionForm = ({
                 lowerKeypoint: "",
                 upperKeypoint: "",
               },
-        order: prevState.down_condition.length,
+        order: prevState.end_condition.length,
       };
 
       return {
         ...prevState,
-        down_condition: [...prevState.down_condition, newToast],
+        end_condition: [...prevState.end_condition, newToast],
       };
     });
   };
 
   const handleCloseToast = (id) => {
     setLocalData((prevState) => {
-      const updatedToasts = prevState.down_condition.filter(
+      const updatedToasts = prevState.end_condition.filter(
         (toast) => toast.id !== id
       );
       return {
         ...prevState,
-        down_condition: updatedToasts,
+        end_condition: updatedToasts,
       };
     });
   };
 
   const handleInputChange = (id, field, value) => {
     setLocalData((prevState) => {
-      const updatedToasts = prevState.down_condition.map((toast) => {
+      const updatedToasts = prevState.end_condition.map((toast) => {
         if (toast.id === id) {
           return {
             ...toast,
@@ -100,7 +100,7 @@ const DownPositionForm = ({
       });
       return {
         ...prevState,
-        down_condition: updatedToasts,
+        end_condition: updatedToasts,
       };
     });
   };
@@ -255,7 +255,7 @@ const DownPositionForm = ({
                 </Dropdown.Item>
                 <Dropdown.Divider />
               </Dropdown>
-              {localData.down_condition.map((toast) => renderToastForm(toast))}
+              {localData.end_condition.map((toast) => renderToastForm(toast))}
             </div>
           </div>
         </div>
@@ -300,4 +300,4 @@ const DownPositionForm = ({
   );
 };
 
-export default DownPositionForm;
+export default EndPositionForm;
