@@ -6,7 +6,9 @@ import StartPositionForm from "./Form/StartPositionForm";
 import EndPositionForm from "./Form/EndPositionForm"; // Assuming you create this
 import SummaryPage from "./Form/SummaryPage"; // Assuming you create this
 
-const ModalForm = ({ openModal, onCloseModal }) => {
+const ModalForm = ({ openModal, onCloseModal, handleStatusUpdate }) => {
+  console.log("ModalForm: Received handleStatusUpdate prop");
+  const [submitStatus, setSubmitStatus] = useState("");
   const [currentPage, setCurrentPage] = useState(0);
   const pageNames = [
     "Information",
@@ -79,8 +81,6 @@ const ModalForm = ({ openModal, onCloseModal }) => {
     }
   };
 
-  console.log("formData from modal", formData);
-
   const renderPage = () => {
     switch (currentPage) {
       case 0:
@@ -123,6 +123,8 @@ const ModalForm = ({ openModal, onCloseModal }) => {
             onPreviousPage={handlePreviousPage}
             currentPage={currentPage}
             pageNames={pageNames}
+            onCloseModal={onCloseModal}
+            handleStatusUpdate={handleStatusUpdate}
           />
         );
       default:
@@ -133,11 +135,7 @@ const ModalForm = ({ openModal, onCloseModal }) => {
   return (
     <div className="flex w-full h-full">
       <Modal show={openModal} size="8xl" onClose={onCloseModal}>
-        <div
-          className="bg-gradient-to-tr from-black to-indigo-800 rounded-md text-white"
-          method="post"
-          onSubmit={(e) => e.preventDefault()}
-        >
+        <div className="bg-gradient-to-tr from-black to-indigo-800 rounded-md text-white">
           <Modal.Header>
             <div className="text-white font-bold text-3xl">
               Create Workout Program

@@ -23,6 +23,7 @@ const StartPositionForm = ({
   updateFormData,
   currentPage,
   pageNames,
+  
 }) => {
   const [localData, setLocalData] = useState({
     start_condition: formData.start_condition || [],

@@ -28,10 +28,10 @@ const InformationForm = ({ formData, onNextPage, pageNames }) => {
   };
 
   const handleNextPage = () => {
-    /* if (!localData.title || !localData.description || !localData.imageUrl) {
+    if (!localData.title || !localData.description || !localData.imageUrl) {
       alert("Please complete all fields before proceeding.");
       return;
-    } */
+    }
     onNextPage(localData);
   };
 

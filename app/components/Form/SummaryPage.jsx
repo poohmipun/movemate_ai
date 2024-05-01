@@ -7,7 +7,16 @@ import {
   FaLessThanEqual,
 } from "react-icons/fa";
 
-const SummaryPage = ({ formData, onPreviousPage, currentPage, pageNames }) => {
+const SummaryPage = ({
+  formData,
+  onPreviousPage,
+  currentPage,
+  pageNames,
+  handleStatusUpdate,
+  onCloseModal,
+}) => {
+  console.log("SummaryPage: Received handleStatusUpdate");
+  const [submitStatus, setSubmitStatus] = useState("");
   const [localData, setLocalData] = useState({
     title: formData.title || "",
     description: formData.description || "",
@@ -18,32 +27,38 @@ const SummaryPage = ({ formData, onPreviousPage, currentPage, pageNames }) => {
 
   const handleSubmit = async () => {
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append("title", formData.title);
-      formDataToSend.append("description", formData.description);
-      formDataToSend.append("imageUrl", formData.imageUrl);
-      formDataToSend.append(
-        "start_condition",
-        JSON.stringify(formData.start_condition)
-      );
-      formDataToSend.append(
-        "end_condition",
-        JSON.stringify(formData.end_condition)
-      );
+      const formDataToSend = {
+        title: formData.title,
+        description: formData.description,
+        img_url: formData.imageUrl, // Ensure this is correctly populated
+        start_condition: formData.start_condition,
+        end_condition: formData.end_condition,
+      };
 
-      // Log FormData entries
-      for (const [key, value] of formDataToSend.entries()) {
-        console.log(`${key}: ${value}`);
-      }
+      console.log("SummaryPage: Sending data", formDataToSend);
 
       const res = await fetch("/api/Programs", {
         method: "POST",
-        body: formDataToSend,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formDataToSend),
       });
 
-      // Remaining code...
+      if (!res.ok) {
+        const errorResponse = await res.json(); // Get more detail on the error
+        throw new Error(`Failed to create program: ${errorResponse.message}`);
+      }
+
+      const response = await res.json();
+      handleStatusUpdate("Form has been successfully created.");
+      onCloseModal();
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
     } catch (error) {
-      console.error("Error creating program:", error.message);
+      console.error("SummaryPage: Error creating program", error);
+      handleStatusUpdate(`Failed to create the program: ${error.message}`);
     }
   };
 
