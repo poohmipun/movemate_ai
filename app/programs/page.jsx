@@ -2,11 +2,20 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Label, Table, Button, Toast, Alert, Modal } from "flowbite-react";
+import {
+  Label,
+  Table,
+  Button,
+  Toast,
+  Alert,
+  Modal,
+  TextInput,
+} from "flowbite-react";
 import { HiCheckCircle } from "react-icons/hi";
 import { CldImage } from "next-cloudinary";
 import ModalForm from "../components/ModalForm";
 import ProgramDetailModal from "../components/ProgramDetailModal";
+import { useRouter } from "next/navigation";
 
 const Programs = () => {
   const [programs, setPrograms] = useState([]);
@@ -17,14 +26,27 @@ const Programs = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [selectedPrograms, setSelectedPrograms] = useState([]);
-
   const [submitStatus, setSubmitStatus] = useState("");
+  const router = useRouter();
+
+  console.log("selectedPrograms", selectedPrograms);
+
+  const handleStartClick = () => {
+    if (selectedPrograms.length > 0) {
+      router.push("/programs/exercises");
+    }
+  };
 
   const handleStatusUpdate = (status) => {
     console.log("Updating status to:", status); // Check if this logs the correct status
     setAlert(true);
     setSubmitStatus(status);
     setTimeout(() => setSubmitStatus(""), 5000); // Optionally clear the status message after a delay
+  };
+
+  const handleAddToList = (program, reps, sets) => {
+    const updatedProgram = { ...program, reps, sets };
+    setSelectedPrograms((prevPrograms) => [...prevPrograms, updatedProgram]);
   };
 
   const handleCloseModal = () => {
@@ -36,13 +58,8 @@ const Programs = () => {
     setOpenDetail(true); // Then open the modal
   };
 
-  // And ensure `handleCloseDetail` correctly closes the detail modal
   const handleCloseDetail = () => {
     setOpenDetail(false);
-  };
-
-  const handleAddToList = (program) => {
-    setSelectedPrograms((prevPrograms) => [...prevPrograms, program]);
   };
 
   const handleRemoveProgram = (index) => {
@@ -59,6 +76,7 @@ const Programs = () => {
         setIsLoading(false);
         if (res.ok) {
           const data = await res.json();
+          console.log(data.data);
           setPrograms(data.data);
         } else {
           throw new Error("Failed to fetch programs");
@@ -98,7 +116,7 @@ const Programs = () => {
 
       <div className="w-full h-full flex flex-col">
         <p className="head_text text-left mb-12">Choose your Programs</p>
-        <div className="cards max-w-full max-h-screen mb-6 grid grid-cols-1 md:grid-cols-4 xl:grid-cols-5 gap-4 flex-wrap overflow-auto ">
+        <div className="cards max-w-full max-h-screen mb-6 grid grid-cols-1 md:grid-cols-2 lg:grid-col-3 xl:grid-cols-5 gap-4 flex-wrap overflow-auto ">
           <button
             onClick={() => setOpenModal(true)}
             className="card max-w-64 min-h-96  border rounded-lg shadow bg-gray-900 border-blue-300  flex flex-col items-center "
@@ -161,13 +179,13 @@ const Programs = () => {
                   <div className="flex justify-between">
                     <a
                       onClick={() => openDetailModal(program)}
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-end text-white underline w-fit cursor-pointer"
+                      className="inline-flex items-center px-3 py-2 sm:text-[14px] text-[12px] font-medium text-end text-white underline w-fit cursor-pointer"
                     >
                       read more
                     </a>
                     <a
                       onClick={() => handleAddToList(program)}
-                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-end text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 w-fit "
+                      className="inline-flex items-center px-3 py-2 text-sm font-medium text-end text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 w-fit cursor-pointer"
                     >
                       Add to list
                     </a>
@@ -178,45 +196,93 @@ const Programs = () => {
         </div>
 
         {/* summarize */}
-        <div className="overflow-x-auto mb-6">
-          <Table>
-            <Table.Head className="text-black">
-              <Table.HeadCell>Workout name</Table.HeadCell>
-              <Table.HeadCell>How many sets</Table.HeadCell>
-              <Table.HeadCell>How many reps</Table.HeadCell>
-              <Table.HeadCell>
-                <span className="sr-only">Delete</span>
-              </Table.HeadCell>
-            </Table.Head>
-            <Table.Body className="divide-y">
-              {selectedPrograms.map((program, index) => (
-                <Table.Row className="bg-white" key={index}>
-                  <Table.Cell className="whitespace-nowrap font-medium">
-                    {program.title}
-                  </Table.Cell>
-                  <Table.Cell>{program.sets}</Table.Cell>
-                  <Table.Cell>{program.reps}</Table.Cell>
-                  <Table.Cell>
-                    <button
-                      onClick={() => handleRemoveProgram(index)}
-                      className="text-red-500 hover:text-red-700"
-                    >
-                      Remove
-                    </button>
-                  </Table.Cell>
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
-        </div>
-
-        <div className="footer w-full flex flex-row-reverse">
+        {selectedPrograms.length > 0 && (
+          <div className="overflow-x-auto mb-6">
+            <Table>
+              <Table.Head className="text-black">
+                <Table.HeadCell>Workout Name</Table.HeadCell>
+                <Table.HeadCell>Reps per Set</Table.HeadCell>
+                <Table.HeadCell>Number of Sets</Table.HeadCell>
+                <Table.HeadCell>
+                  <span className="sr-only">Delete</span>
+                </Table.HeadCell>
+              </Table.Head>
+              <Table.Body className="divide-y">
+                {selectedPrograms.map((program, index) => (
+                  <Table.Row className="bg-white" key={index}>
+                    <Table.Cell className="whitespace-nowrap font-medium">
+                      {program.title}
+                    </Table.Cell>
+                    <Table.Cell>
+                      <TextInput
+                        name={`reps-${index}`}
+                        placeholder="Input Reps"
+                        type="number"
+                        required={true}
+                        sizing="md"
+                        defaultValue={5} // Default value for reps
+                        onChange={(e) => {
+                          const reps = e.target.value;
+                          const updatedPrograms = [...selectedPrograms];
+                          updatedPrograms[index] = {
+                            ...updatedPrograms[index],
+                            reps,
+                          };
+                          setSelectedPrograms(updatedPrograms);
+                        }}
+                      />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <TextInput
+                        name={`sets-${index}`}
+                        placeholder="Input Sets"
+                        type="number"
+                        required={true}
+                        sizing="md"
+                        defaultValue={5} // Default value for sets
+                        onChange={(e) => {
+                          const sets = e.target.value;
+                          const updatedPrograms = [...selectedPrograms];
+                          updatedPrograms[index] = {
+                            ...updatedPrograms[index],
+                            sets,
+                          };
+                          setSelectedPrograms(updatedPrograms);
+                        }}
+                      />
+                    </Table.Cell>
+                    <Table.Cell>
+                      <button
+                        onClick={() => handleRemoveProgram(index)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        Remove
+                      </button>
+                    </Table.Cell>
+                  </Table.Row>
+                ))}
+              </Table.Body>
+            </Table>
+          </div>
+        )}
+        <div className="flex mt-6 justify-between">
           <Button
             className="orange_btn min-w-fit focus:outline-none focus:ring focus:ring-blue-800 border-none"
             as={Link}
-            href="/programs/exercises"
+            href="/webcamtester"
           >
-            Start
+            Go Back
+          </Button>
+          <Button
+            disabled={selectedPrograms.length === 0}
+            onClick={handleStartClick}
+            className={`orange_btn min-w-fit focus:outline-none focus:ring focus:ring-blue-800 border-none ${
+              selectedPrograms.length === 0
+                ? "opacity-50 cursor-not-allowed"
+                : ""
+            }`}
+          >
+            {selectedPrograms.length > 0 ? "Start" : "Please select a program"}
           </Button>
         </div>
       </div>
