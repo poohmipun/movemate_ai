@@ -1,5 +1,5 @@
 import "../styles/globals.css";
-import Navbar from "./components/Navbar";
+import { ProgramProvider } from "./context/ProgramContext";
 
 export const metadata = {
   title: "MoveMate AI",
@@ -13,8 +13,10 @@ const RootLayout = ({ children }) => {
   return (
     <html lang="en">
       <body suppressHydrationWarning={true}>
-        <div className="main"></div>
-        <main className="app">{children}</main>
+        <ProgramProvider>
+          <div className="main"></div>
+          <main className="app">{children}</main>
+        </ProgramProvider>
       </body>
     </html>
   );

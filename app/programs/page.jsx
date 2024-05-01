@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -16,6 +16,7 @@ import { CldImage } from "next-cloudinary";
 import ModalForm from "../components/ModalForm";
 import ProgramDetailModal from "../components/ProgramDetailModal";
 import { useRouter } from "next/navigation";
+import { ProgramContext } from "../context/ProgramContext";
 
 const Programs = () => {
   const [programs, setPrograms] = useState([]);
@@ -25,11 +26,9 @@ const Programs = () => {
   const [detail, setDetail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const [selectedPrograms, setSelectedPrograms] = useState([]);
+  const { selectedPrograms, setSelectedPrograms } = useContext(ProgramContext);
   const [submitStatus, setSubmitStatus] = useState("");
   const router = useRouter();
-
-  console.log("selectedPrograms", selectedPrograms);
 
   const handleStartClick = () => {
     if (selectedPrograms.length > 0) {
