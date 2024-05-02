@@ -30,6 +30,7 @@ const Programs = () => {
   const [submitStatus, setSubmitStatus] = useState("");
   const router = useRouter();
 
+  console.log("selectedPrograms", selectedPrograms);
   const handleStartClick = () => {
     if (selectedPrograms.length > 0) {
       router.push("/programs/exercises");
@@ -43,8 +44,8 @@ const Programs = () => {
     setTimeout(() => setSubmitStatus(""), 5000); // Optionally clear the status message after a delay
   };
 
-  const handleAddToList = (program, reps, sets) => {
-    const updatedProgram = { ...program, reps, sets };
+  const handleAddToList = (program) => {
+    const updatedProgram = { ...program, reps: 5, sets: 5 }; // Default values of 5
     setSelectedPrograms((prevPrograms) => [...prevPrograms, updatedProgram]);
   };
 
@@ -194,7 +195,6 @@ const Programs = () => {
             ))}
         </div>
 
-        {/* summarize */}
         {selectedPrograms.length > 0 && (
           <div className="overflow-x-auto mb-6">
             <Table>
@@ -220,12 +220,13 @@ const Programs = () => {
                         required={true}
                         sizing="md"
                         defaultValue={5} // Default value for reps
+                        value={program.reps || 5} // Use the state value, fallback to 5
                         onChange={(e) => {
-                          const reps = e.target.value;
+                          const reps = e.target.value || 5; // Use 5 as the default if input is empty
                           const updatedPrograms = [...selectedPrograms];
                           updatedPrograms[index] = {
                             ...updatedPrograms[index],
-                            reps,
+                            reps: parseInt(reps, 10), // Parse as integer
                           };
                           setSelectedPrograms(updatedPrograms);
                         }}
@@ -238,13 +239,14 @@ const Programs = () => {
                         type="number"
                         required={true}
                         sizing="md"
+                        value={program.sets || 5} // Use the state value, fallback to 5
                         defaultValue={5} // Default value for sets
                         onChange={(e) => {
-                          const sets = e.target.value;
+                          const sets = e.target.value || 5; // Use 5 as the default if input is empty
                           const updatedPrograms = [...selectedPrograms];
                           updatedPrograms[index] = {
                             ...updatedPrograms[index],
-                            sets,
+                            sets: parseInt(sets, 10), // Parse as integer
                           };
                           setSelectedPrograms(updatedPrograms);
                         }}

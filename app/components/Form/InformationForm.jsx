@@ -72,7 +72,7 @@ const InformationForm = ({ formData, onNextPage, pageNames }) => {
               </div>
             </div>
             <CldUploadButton
-              uploadPreset="nh1i8otq"
+              uploadPreset={process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET}
               onSuccess={handleImageUploadSuccess}
               className="orange_btn w-full h-10"
               onUploadAdded={(result) => {
