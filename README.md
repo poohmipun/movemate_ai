@@ -8,12 +8,12 @@ To run the project locally, follow these steps:
 
 1. **Clone the Repository**
    ```bash
-   git clone <your-repo-url>
-   cd MoveMateAI
+   git clone https://github.com/poohmipun/movemate_ai.git
+   cd movemate_ai
    ```
 
 2. **Install Dependencies**
-   Ensure you have Node.js installed, then run:
+   Ensure you have Node.js version **20.8.1** installed, then run:
    ```bash
    npm install
    ```
@@ -45,25 +45,27 @@ To run the project locally, follow these steps:
 
 ## Dependencies
 
-- **@p5-wrapper/react**: A React wrapper for p5.js.
-- **@tensorflow-models/pose-detection**: Pose detection library.
-- **@tensorflow/tfjs-backend-webgl**: WebGL backend for TensorFlow.js.
-- **axios**: A promise-based HTTP client for the browser and Node.js.
-- **flowbite-react**: Tailwind CSS components for React.
-- **mongodb**: MongoDB Node.js driver.
-- **mongoose**: MongoDB ODM.
-- **next**: Next.js framework.
-- **next-cloudinary**: Cloudinary integration for Next.js.
-- **p5**: A JavaScript library for creative coding.
-- **react**: A JavaScript library for building user interfaces.
-- **react-dom**: Entry point of the DOM renderer for React.
-- **uuid**: A simple, fast generation of RFC4122 UUIDs.
+For optimal performance, it is recommended to use the specified versions of the following dependencies:
+
+- **@p5-wrapper/react (4.3.4)**: A React wrapper for p5.js.
+- **@tensorflow-models/pose-detection (2.1.3)**: Pose detection library.
+- **@tensorflow/tfjs-backend-webgl (4.17.0)**: WebGL backend for TensorFlow.js.
+- **axios (1.6.8)**: A promise-based HTTP client for the browser and Node.js.
+- **flowbite-react (0.7.5)**: Tailwind CSS components for React.
+- **mongodb (6.5.0)**: MongoDB Node.js driver.
+- **mongoose (8.2.4)**: MongoDB ODM.
+- **next (14.0.4)**: Next.js framework.
+- **next-cloudinary (6.3.0)**: Cloudinary integration for Next.js.
+- **p5 (1.9.1)**: A JavaScript library for creative coding.
+- **react (18)**: A JavaScript library for building user interfaces.
+- **react-dom (18)**: Entry point of the DOM renderer for React.
+- **uuid (9.0.1)**: A simple, fast generation of RFC4122 UUIDs.
 
 ## Dev Dependencies
 
-- **@types/node**: TypeScript definitions for Node.js.
-- **@types/react**: TypeScript definitions for React.
-- **autoprefixer**: Adds vendor prefixes to CSS rules.
-- **postcss**: A tool for transforming CSS with JavaScript.
-- **tailwindcss**: A utility-first CSS framework.
-- **typescript**: TypeScript compiler.
+- **@types/node (20.12.2)**: TypeScript definitions for Node.js.
+- **@types/react (18.2.73)**: TypeScript definitions for React.
+- **autoprefixer (10.0.1)**: Adds vendor prefixes to CSS rules.
+- **postcss (8)**: A tool for transforming CSS with JavaScript.
+- **tailwindcss (3.3.0)**: A utility-first CSS framework.
+- **typescript (5.4.3)**: TypeScript compiler.
