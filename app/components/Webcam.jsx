@@ -8,8 +8,12 @@ let ReactP5Wrapper;
 if (typeof window !== "undefined") {
   ReactP5Wrapper = require("@p5-wrapper/react").ReactP5Wrapper;
 }
+import {
+  checkKeypointRotationCondition,
+  checkKeypointPositionCondition,
+} from "../utils/calculator";
 
-const Webcam = ({ onKeypointsCountChange }) => {
+const Webcam = ({ program, onWorkoutProgress }) => {
   const videoStreamRef = useRef(null);
   const [openWebcam, setOpenWebcam] = useState(false);
   const [keypoints, setKeypoints] = useState(0);
@@ -33,7 +37,9 @@ const Webcam = ({ onKeypointsCountChange }) => {
     "12,14": "c",
     "14,16": "c",
   };
-
+  const [inStartCondition, setInStartCondition] = useState(false);
+  const [repCount, setRepCount] = useState(0);
+  console.log("repCount", repCount);
   useEffect(() => {
     const init = async () => {
       const initVideoStream = async () => {
@@ -118,13 +124,65 @@ const Webcam = ({ onKeypointsCountChange }) => {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      onKeypointsCountChange(keypoints);
-    }, 300);
-    return () => {
-      clearInterval(interval);
-    };
-  }, [keypoints, onKeypointsCountChange]);
+    setInStartCondition(false);
+    setRepCount(0);
+  }, [program]);
+
+  const checkConditions = (keypoints) => {
+    let startConditionMet = false;
+    let endConditionMet = false;
+
+    // Check start_condition
+    for (const condition of program.start_condition) {
+      let conditionMet = false;
+      if (condition.condition === "Keypoint Rotation") {
+        conditionMet = checkKeypointRotationCondition(keypoints, condition);
+      } else if (condition.condition === "Keypoint Position") {
+        conditionMet = checkKeypointPositionCondition(keypoints, condition);
+      }
+
+      // If any start condition is not met, set startConditionMet to false and exit the loop
+      if (!conditionMet) {
+        startConditionMet = false;
+        break;
+      }
+    }
+
+    // If start condition is met, check end_condition
+    if (startConditionMet) {
+      for (const condition of program.end_condition) {
+        if (condition.condition === "Keypoint Rotation") {
+          endConditionMet = checkKeypointRotationCondition(
+            keypoints,
+            condition
+          );
+        } else if (condition.condition === "Keypoint Position") {
+          endConditionMet = checkKeypointPositionCondition(
+            keypoints,
+            condition
+          );
+        }
+
+        // If any end condition is not met, exit the loop
+        if (!endConditionMet) break;
+      }
+    }
+
+    // Logic to count reps
+    if (startConditionMet && !inStartCondition) {
+      setInStartCondition(true);
+    } else if (endConditionMet && inStartCondition) {
+      // Completed one rep cycle
+      setRepCount((prev) => prev + 1);
+      setInStartCondition(false);
+    }
+
+    // Calculate progress percentage (using rep count or other criteria)
+    const progressPercentage = Math.min((repCount / program.reps) * 100, 100);
+
+    // Update progress using the provided callback
+    onWorkoutProgress(progressPercentage);
+  };
 
   const sketch = useMemo(() => {
     const drawKeypoints = (filteredKeypoints, video, p5) => {
@@ -161,40 +219,30 @@ const Webcam = ({ onKeypointsCountChange }) => {
 
     const drawSkeleton = (predictions, video, p5) => {
       if (predictions && predictions.length > 0) {
-        const confidence_threshold = 0.5;
-        for (const [key, value] of Object.entries(edges)) {
-          const p = key.split(",");
-          const p1 = p[0];
-          const p2 = p[1];
-
-          const keypoint1 = predictions[0].keypoints[p1];
-          const keypoint2 = predictions[0].keypoints[p2];
+        const confidenceThreshold = 0.5;
+        for (const [key] of Object.entries(edges)) {
+          const [p1Index, p2Index] = key.split(",");
+          const keypoint1 = predictions[0].keypoints[p1Index];
+          const keypoint2 = predictions[0].keypoints[p2Index];
 
           if (
-            keypoint1.score > confidence_threshold &&
-            keypoint2.score > confidence_threshold
+            keypoint1.score > confidenceThreshold &&
+            keypoint2.score > confidenceThreshold
           ) {
             p5.strokeWeight(2);
-            // Set default color
             p5.stroke("rgb(255, 255, 255)");
 
-            // Normalize coordinates
-            const normX1 = keypoint1.x / video.elt.videoWidth;
-            const normY1 = keypoint1.y / video.elt.videoHeight;
-            const normX2 = keypoint2.x / video.elt.videoWidth;
-            const normY2 = keypoint2.y / video.elt.videoHeight;
-
-            // Transform to canvas coordinates
-            const canvasX1 = normX1 * p5.width;
-            const canvasY1 = normY1 * p5.height;
-            const canvasX2 = normX2 * p5.width;
-            const canvasY2 = normY2 * p5.height;
+            const canvasX1 = (keypoint1.x / video.elt.videoWidth) * p5.width;
+            const canvasY1 = (keypoint1.y / video.elt.videoHeight) * p5.height;
+            const canvasX2 = (keypoint2.x / video.elt.videoWidth) * p5.width;
+            const canvasY2 = (keypoint2.y / video.elt.videoHeight) * p5.height;
 
             p5.line(canvasX1, canvasY1, canvasX2, canvasY2);
           }
         }
       }
     };
+
     return (p5) => {
       let video;
 
@@ -226,7 +274,7 @@ const Webcam = ({ onKeypointsCountChange }) => {
             );
             drawKeypoints(filteredKeypoints, video, p5);
             drawSkeleton(predictions, video, p5);
-            setKeypoints(filteredKeypoints.length);
+            checkConditions(filteredKeypoints);
           }
         }
       };
