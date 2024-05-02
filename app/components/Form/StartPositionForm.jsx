@@ -146,7 +146,7 @@ const StartPositionForm = ({
                   <option value="Elbow">Elbow</option>
                   <option value="Shoulder">Shoulder</option>
                   <option value="Hip">Hip</option>
-                  <option value="Ankle">Ankle</option>
+                  <option value="Knee">Knee</option>
                 </Select>
                 <FaLessThanEqual />
                 <TextInput

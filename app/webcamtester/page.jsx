@@ -9,7 +9,7 @@ const WebcamTester = () => {
   const [containerWidth, setContainerWidth] = useState(0);
   const [containerHeight, setContainerHeight] = useState(0);
   const [openWebcam, setOpenWebcam] = useState(false);
-  const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+  const [showSuccessAlert, setShowSuccessAlert] = useState(true);
   const [showWarningAlert, setShowWarningAlert] = useState(false);
   const [numKeypoints, setNumKeypoints] = useState(0);
   const [buttonClicked, setButtonClicked] = useState(false);
