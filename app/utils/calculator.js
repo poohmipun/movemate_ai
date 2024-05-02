@@ -79,54 +79,49 @@ export function checkKeypointPositionCondition(keypoints, condition) {
   const upperKeypoint = condition.formData.upperKeypoint.toLowerCase();
   const lowerKeypoint = condition.formData.lowerKeypoint.toLowerCase();
 
-  // Define prefixes based on the keypoint
-  const upperPrefixes = upperKeypoint === "nose" ? [""] : ["left_", "right_"];
-  const lowerPrefixes = lowerKeypoint === "nose" ? [""] : ["left_", "right_"];
+  const prefixes = ["left_", "right_"];
 
   let upperKeypointData = null;
   let lowerKeypointData = null;
 
-  // Find the keypoint with the highest score for the upper keypoint
-  upperPrefixes.forEach((prefix) => {
-    const kp = keypoints.find(
-      (keypoint) => keypoint.name.toLowerCase() === `${prefix}${upperKeypoint}`
-    );
-    if (kp && (!upperKeypointData || kp.score > upperKeypointData.score)) {
-      upperKeypointData = kp;
+  // Find the highest scoring keypoint for upperKeypoint across all prefixes
+  keypoints.forEach((keypoint) => {
+    console.log("Processing keypoint:", keypoint.name);
+    const nameLower = keypoint.name.toLowerCase();
+    if (
+      nameLower === "nose" ||
+      prefixes.some((prefix) => nameLower === `${prefix}${upperKeypoint}`)
+    ) {
+      if (!upperKeypointData || keypoint.score > upperKeypointData.score) {
+        upperKeypointData = keypoint;
+      }
     }
   });
 
-  // Find the keypoint with the highest score for the lower keypoint
-  lowerPrefixes.forEach((prefix) => {
-    const kp = keypoints.find(
-      (keypoint) => keypoint.name.toLowerCase() === `${prefix}${lowerKeypoint}`
-    );
-    if (kp && (!lowerKeypointData || kp.score > lowerKeypointData.score)) {
-      lowerKeypointData = kp;
+  // Find the highest scoring keypoint for lowerKeypoint across all prefixes
+  keypoints.forEach((keypoint) => {
+    const nameLower = keypoint.name.toLowerCase();
+    if (
+      nameLower === "nose" ||
+      prefixes.some((prefix) => nameLower === `${prefix}${lowerKeypoint}`)
+    ) {
+      if (!lowerKeypointData || keypoint.score > lowerKeypointData.score) {
+        lowerKeypointData = keypoint;
+      }
     }
   });
 
-  // Check if the keypoints were found
-  if (!upperKeypointData || !lowerKeypointData) {
-    console.log(`One or both keypoints not found.`);
+  if (!upperKeypointData) {
+    console.log(`Upper keypoint '${upperKeypoint}' not found.`);
     return false;
   }
 
-  // Determine the anchor point based on the scores
-  const anchorPoint =
-    upperKeypointData.score > lowerKeypointData.score
-      ? upperKeypointData
-      : lowerKeypointData;
-  const otherKeypoint =
-    anchorPoint === upperKeypointData ? lowerKeypointData : upperKeypointData;
+  if (!lowerKeypointData) {
+    console.log(`Lower keypoint '${lowerKeypoint}' not found.`);
+    return false;
+  }
 
-  // Compare the y positions to determine if the condition is met
-  const foundConditionMet = anchorPoint.y < otherKeypoint.y;
-
-  console.log(`Position condition met: ${foundConditionMet}`);
-  console.log(`Anchor point: ${anchorPoint.name}`);
-  console.log(`Anchor side:`, anchorPoint);
-  console.log(`Other keypoint:`, otherKeypoint);
+  const foundConditionMet = upperKeypointData.y < lowerKeypointData.y;
 
   return foundConditionMet;
 }

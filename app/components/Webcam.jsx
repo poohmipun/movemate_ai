@@ -37,9 +37,9 @@ const Webcam = ({ program, onWorkoutProgress }) => {
     "12,14": "c",
     "14,16": "c",
   };
-  const [inStartCondition, setInStartCondition] = useState(false);
+  const [haveStarted, setHaveStarted] = useState(false);
   const [repCount, setRepCount] = useState(0);
-  console.log("repCount", repCount);
+
   useEffect(() => {
     const init = async () => {
       const initVideoStream = async () => {
@@ -123,64 +123,30 @@ const Webcam = ({ program, onWorkoutProgress }) => {
     }
   };
 
-  useEffect(() => {
-    setInStartCondition(false);
-    setRepCount(0);
-  }, [program]);
-
   const checkConditions = (keypoints) => {
-    let startConditionMet = false;
-    let endConditionMet = false;
+    const checkCondition = (condition) => {
+      return condition.type === "Keypoint Rotation"
+        ? checkKeypointRotationCondition(keypoints, condition)
+        : checkKeypointPositionCondition(keypoints, condition);
+    };
 
-    // Check start_condition
-    for (const condition of program.start_condition) {
-      let conditionMet = false;
-      if (condition.condition === "Keypoint Rotation") {
-        conditionMet = checkKeypointRotationCondition(keypoints, condition);
-      } else if (condition.condition === "Keypoint Position") {
-        conditionMet = checkKeypointPositionCondition(keypoints, condition);
-      }
+    const conditionsMet = (conditions) => conditions.every(checkCondition);
 
-      // If any start condition is not met, set startConditionMet to false and exit the loop
-      if (!conditionMet) {
-        startConditionMet = false;
-        break;
-      }
+    // Check if the workout has started and end conditions are met
+    if (haveStarted && conditionsMet(program.end_condition)) {
+      console.log("End conditions met. Moving back to start conditions.");
+      setHaveStarted(false); // Reset haveStarted flag
+      setRepCount((prev) => prev + 1); // Increment rep count
+      console.log(`Rep completed. Total reps: ${repCount + 1}`);
     }
 
-    // If start condition is met, check end_condition
-    if (startConditionMet) {
-      for (const condition of program.end_condition) {
-        if (condition.condition === "Keypoint Rotation") {
-          endConditionMet = checkKeypointRotationCondition(
-            keypoints,
-            condition
-          );
-        } else if (condition.condition === "Keypoint Position") {
-          endConditionMet = checkKeypointPositionCondition(
-            keypoints,
-            condition
-          );
-        }
-
-        // If any end condition is not met, exit the loop
-        if (!endConditionMet) break;
-      }
+    // Check if the workout hasn't started and start conditions are met
+    if (!haveStarted && conditionsMet(program.start_condition)) {
+      console.log("Start condition met. Moving to end conditions.");
+      setHaveStarted(true); // Set haveStarted flag
     }
 
-    // Logic to count reps
-    if (startConditionMet && !inStartCondition) {
-      setInStartCondition(true);
-    } else if (endConditionMet && inStartCondition) {
-      // Completed one rep cycle
-      setRepCount((prev) => prev + 1);
-      setInStartCondition(false);
-    }
-
-    // Calculate progress percentage (using rep count or other criteria)
     const progressPercentage = Math.min((repCount / program.reps) * 100, 100);
-
-    // Update progress using the provided callback
     onWorkoutProgress(progressPercentage);
   };
 

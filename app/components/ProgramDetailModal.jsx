@@ -54,7 +54,6 @@ const ProgramDetailModal = ({ program, isOpen, onClose }) => {
                       src={program.img_url}
                       alt="Uploaded Image"
                       layout="responsive"
-                      objectFit="contain"
                       width={230}
                       height={230}
                       className="max-h-[300px] rounded-xl"

@@ -219,7 +219,6 @@ const Programs = () => {
                         type="number"
                         required={true}
                         sizing="md"
-                        defaultValue={5} // Default value for reps
                         value={program.reps || 5} // Use the state value, fallback to 5
                         onChange={(e) => {
                           const reps = e.target.value || 5; // Use 5 as the default if input is empty
@@ -240,7 +239,6 @@ const Programs = () => {
                         required={true}
                         sizing="md"
                         value={program.sets || 5} // Use the state value, fallback to 5
-                        defaultValue={5} // Default value for sets
                         onChange={(e) => {
                           const sets = e.target.value || 5; // Use 5 as the default if input is empty
                           const updatedPrograms = [...selectedPrograms];
