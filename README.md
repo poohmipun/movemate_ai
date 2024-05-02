@@ -2,6 +2,10 @@
 
 MoveMateAI is your ultimate fitness companion powered by artificial intelligence. With its intuitive interface, real-time feedback, and personalized guidance, MoveMateAI empowers users to unlock their full potential and elevate their fitness journey.
 
+## Live Website
+
+Visit the live version of the app at [MoveMateAI](https://movemateai.netlify.app/).
+
 ## Getting Started
 
 To run the project locally, follow these steps:
