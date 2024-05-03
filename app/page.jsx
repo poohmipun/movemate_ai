@@ -20,7 +20,7 @@ const Home = () => {
         <div className="video-container">
           <iframe
             className="video"
-            src="https://youtu.be/d_iaPeYEicw?autoplay=1&mute=1&loop=1"
+            src="https://res.cloudinary.com/djasyj8sc/video/upload/v1714695172/wdqeevbenyrwwy817m4h.mp4?autoplay=1&mute=1&loop=1"
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -28,7 +28,7 @@ const Home = () => {
           ></iframe>
           <iframe
             className="video"
-            src="https://youtu.be/i-3XV0aptEM?si=jEAE4AfAmC3koQyX?autoplay=1&mute=1&loop=1"
+            src="https://res.cloudinary.com/djasyj8sc/video/upload/v1714695178/ypz01sss0xqgtk4ohr5g.mp4?autoplay=1&mute=1&loop=1"
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
