@@ -8,12 +8,8 @@ let ReactP5Wrapper;
 if (typeof window !== "undefined") {
   ReactP5Wrapper = require("@p5-wrapper/react").ReactP5Wrapper;
 }
-import {
-  checkKeypointRotationCondition,
-  checkKeypointPositionCondition,
-} from "../utils/calculator";
 
-const Webcam = ({ program, onWorkoutProgress }) => {
+const Webcam = ({ onKeypointsCountChange }) => {
   const videoStreamRef = useRef(null);
   const [openWebcam, setOpenWebcam] = useState(false);
   const [keypoints, setKeypoints] = useState(0);
@@ -37,8 +33,6 @@ const Webcam = ({ program, onWorkoutProgress }) => {
     "12,14": "c",
     "14,16": "c",
   };
-  const [haveStarted, setHaveStarted] = useState(false);
-  const [repCount, setRepCount] = useState(0);
 
   useEffect(() => {
     const init = async () => {
@@ -123,32 +117,14 @@ const Webcam = ({ program, onWorkoutProgress }) => {
     }
   };
 
-  const checkConditions = (keypoints) => {
-    const checkCondition = (condition) => {
-      return condition.type === "Keypoint Rotation"
-        ? checkKeypointRotationCondition(keypoints, condition)
-        : checkKeypointPositionCondition(keypoints, condition);
+  useEffect(() => {
+    const interval = setInterval(() => {
+      onKeypointsCountChange(keypoints);
+    }, 300);
+    return () => {
+      clearInterval(interval);
     };
-
-    const conditionsMet = (conditions) => conditions.every(checkCondition);
-
-    // Check if the workout has started and end conditions are met
-    if (haveStarted && conditionsMet(program.end_condition)) {
-      console.log("End conditions met. Moving back to start conditions.");
-      setHaveStarted(false); // Reset haveStarted flag
-      setRepCount((prev) => prev + 1); // Increment rep count
-      console.log(`Rep completed. Total reps: ${repCount + 1}`);
-    }
-
-    // Check if the workout hasn't started and start conditions are met
-    if (!haveStarted && conditionsMet(program.start_condition)) {
-      console.log("Start condition met. Moving to end conditions.");
-      setHaveStarted(true); // Set haveStarted flag
-    }
-
-    const progressPercentage = Math.min((repCount / program.reps) * 100, 100);
-    onWorkoutProgress(progressPercentage);
-  };
+  }, [keypoints, onKeypointsCountChange]);
 
   const sketch = useMemo(() => {
     const drawKeypoints = (filteredKeypoints, video, p5) => {
@@ -185,30 +161,40 @@ const Webcam = ({ program, onWorkoutProgress }) => {
 
     const drawSkeleton = (predictions, video, p5) => {
       if (predictions && predictions.length > 0) {
-        const confidenceThreshold = 0.5;
-        for (const [key] of Object.entries(edges)) {
-          const [p1Index, p2Index] = key.split(",");
-          const keypoint1 = predictions[0].keypoints[p1Index];
-          const keypoint2 = predictions[0].keypoints[p2Index];
+        const confidence_threshold = 0.5;
+        for (const [key, value] of Object.entries(edges)) {
+          const p = key.split(",");
+          const p1 = p[0];
+          const p2 = p[1];
+
+          const keypoint1 = predictions[0].keypoints[p1];
+          const keypoint2 = predictions[0].keypoints[p2];
 
           if (
-            keypoint1.score > confidenceThreshold &&
-            keypoint2.score > confidenceThreshold
+            keypoint1.score > confidence_threshold &&
+            keypoint2.score > confidence_threshold
           ) {
             p5.strokeWeight(2);
+            // Set default color
             p5.stroke("rgb(255, 255, 255)");
 
-            const canvasX1 = (keypoint1.x / video.elt.videoWidth) * p5.width;
-            const canvasY1 = (keypoint1.y / video.elt.videoHeight) * p5.height;
-            const canvasX2 = (keypoint2.x / video.elt.videoWidth) * p5.width;
-            const canvasY2 = (keypoint2.y / video.elt.videoHeight) * p5.height;
+            // Normalize coordinates
+            const normX1 = keypoint1.x / video.elt.videoWidth;
+            const normY1 = keypoint1.y / video.elt.videoHeight;
+            const normX2 = keypoint2.x / video.elt.videoWidth;
+            const normY2 = keypoint2.y / video.elt.videoHeight;
+
+            // Transform to canvas coordinates
+            const canvasX1 = normX1 * p5.width;
+            const canvasY1 = normY1 * p5.height;
+            const canvasX2 = normX2 * p5.width;
+            const canvasY2 = normY2 * p5.height;
 
             p5.line(canvasX1, canvasY1, canvasX2, canvasY2);
           }
         }
       }
     };
-
     return (p5) => {
       let video;
 
@@ -240,7 +226,7 @@ const Webcam = ({ program, onWorkoutProgress }) => {
             );
             drawKeypoints(filteredKeypoints, video, p5);
             drawSkeleton(predictions, video, p5);
-            checkConditions(filteredKeypoints);
+            setKeypoints(filteredKeypoints.length);
           }
         }
       };

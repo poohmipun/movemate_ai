@@ -9,7 +9,7 @@ const ExerciseManager = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [progress, setProgress] = useState({});
 
-  const handleWorkoutProgress = (progressPercentage) => {
+  /*  const handleWorkoutProgress = (progressPercentage) => {
     const currentProgram = selectedPrograms[currentIndex];
     setProgress((prev) => ({
       ...prev,
@@ -23,14 +23,14 @@ const ExerciseManager = () => {
     ) {
       setCurrentIndex((prev) => prev + 1);
     }
-  };
+  }; */
 
-  useEffect(() => {
+  /* useEffect(() => {
     if (selectedPrograms.length > 0) {
       setProgress({});
       setCurrentIndex(0);
     }
-  }, [selectedPrograms]);
+  }, [selectedPrograms]); */
 
   return (
     <div className="w-full max-h-screen flex flex-col overflow-hidden">
@@ -38,8 +38,8 @@ const ExerciseManager = () => {
         <div className="w-full h-screen font-bold text-white text-2xl sm:text-3xl pb-2 relative">
           {selectedPrograms.length > 0 && (
             <Webcam
-              program={selectedPrograms[currentIndex]}
-              onWorkoutProgress={handleWorkoutProgress}
+            /* program={selectedPrograms[currentIndex]}
+              onWorkoutProgress={handleWorkoutProgress} */
             />
           )}
 
