@@ -23,7 +23,6 @@ const StartPositionForm = ({
   updateFormData,
   currentPage,
   pageNames,
-  
 }) => {
   const [localData, setLocalData] = useState({
     start_condition: formData.start_condition || [],
@@ -223,15 +222,11 @@ const StartPositionForm = ({
               Start position
             </h3>
             <div>
-              <iframe
+              <img
                 className="w-[600px] h-[400px] rounded-md"
-                src="https://www.youtube.com/embed/CN_RsGkRScM?autoplay=1&mute=1&loop=1"
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
-                loop
-              ></iframe>
+                src="/images/t_pose.png"
+                alt="Description of the image"
+              />
             </div>
           </div>
         </div>

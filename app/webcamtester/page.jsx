@@ -25,10 +25,10 @@ const WebcamTester = () => {
 
   const handleSendKeypointsCount = (count) => {
     setNumKeypoints(count);
-    if (count === 17 && !showSuccessAlert) {
+    if (count === 7 && !showSuccessAlert) {
       setShowSuccessAlert(true);
       setShowWarningAlert(false);
-    } else if (!showSuccessAlert && count !== 17) {
+    } else if (!showSuccessAlert && count !== 7) {
       setShowWarningAlert(true);
     }
   };
